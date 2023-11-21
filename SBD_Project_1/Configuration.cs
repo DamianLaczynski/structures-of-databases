@@ -15,7 +15,8 @@ namespace SBD_Project_1
     {
         ["maxRecordLength"] = "15",
         ["maxNumberInRecord"] = "100",
-        ["bufferSize"] = $"{13*15*sizeof(int)}",
+        ["bufferSize"] = $"{13*15*sizeof(int)}", //max 13 records in buffer
+        ["recordsCount"] = "100",
         ["tapesCount"] = "3"
     })
     .Build();

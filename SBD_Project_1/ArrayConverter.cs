@@ -19,7 +19,20 @@ namespace SBD_Project_1.Models
                 Buffer.BlockCopy(temp, 0, byteArray, i * sizeof(int), sizeof(int));
             }
 
-            Buffer.BlockCopy(intArray, 0, byteArray, 0, byteArray.Length);
+            //Buffer.BlockCopy(intArray, 0, byteArray, 0, byteArray.Length); //TODO: check if this is needed
+            return byteArray;
+        }
+        public static byte[] ToByteArray(Queue<Record> queue)
+        {
+            byte[] byteArray = new byte[queue.Count * 15 * sizeof(int)];
+
+            foreach(Record record in queue)
+            {
+                byte[] temp = ToByteArray(record.GetContent());
+                Buffer.BlockCopy(temp, 0, byteArray, 0, byteArray.Length);
+            }
+
+            //Buffer.BlockCopy(intArray, 0, byteArray, 0, byteArray.Length); //TODO: check if this is needed
             return byteArray;
         }
 
@@ -36,7 +49,7 @@ namespace SBD_Project_1.Models
 
         public static Queue<Record> ToRecordQueue(byte[] byteArray)
         {
-            Queue<Record> recordList = new Queue<Record>();
+            Queue<Record> recordQueue = new Queue<Record>();
             int[] intArray = ArrayConverter.ToIntArray(byteArray);
             int[] record = new int[NaturalNumbersSetRecord.MaxRecordLength];
             for (int i = 0; i < intArray.Length; i++)
@@ -46,11 +59,11 @@ namespace SBD_Project_1.Models
                 if (i % NaturalNumbersSetRecord.MaxRecordLength == NaturalNumbersSetRecord.MaxRecordLength-1)
                 {
                     //Console.WriteLine($"{i/NaturalNumbersSetRecord.MaxRecordLength}:{new NaturalNumbersSetRecord(record)}");
-                    recordList.Enqueue((Record)new NaturalNumbersSetRecord(record));
+                    recordQueue.Enqueue((Record)new NaturalNumbersSetRecord(record));
                     record = new int[NaturalNumbersSetRecord.MaxRecordLength];
                 }
             }
-            return recordList;
+            return recordQueue;
         }
         public static List<Record> ToRecordList(byte[] byteArray)
         {
