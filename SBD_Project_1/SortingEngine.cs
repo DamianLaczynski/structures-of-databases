@@ -10,7 +10,6 @@ namespace SBD_Project_1
     internal class SortingEngine
     {
         private readonly RecordFile _file;
-        private readonly int _tapesCount = Configuration.TAPES_COUNT;
         private List<Tape> _tapes;
         private Tape _sourceTape;
 
@@ -43,8 +42,8 @@ namespace SBD_Project_1
             //define sourse tape
             _sourceTape = new Tape(_file);
             //define tapes for distribution
-            _tapes = new List<Tape>(_tapesCount);
-            for (int i = 0; i < _tapesCount-1; i++)
+            _tapes = new List<Tape>(Configuration.TAPES_COUNT);
+            for (int i = 0; i < Configuration.TAPES_COUNT-1; i++)
             {
                 _tapes.Add(new Tape(TapeMode.Write));
             }
@@ -113,7 +112,7 @@ namespace SBD_Project_1
 
         private int[] CalculateDistribution(int seriesCount)
         {
-            return FibonacciSequenceGenerator.GenerateDistribution(_tapesCount-1, seriesCount);
+            return FibonacciSequenceGenerator.GenerateDistribution(Configuration.TAPES_COUNT-1, seriesCount);
         }
 
         //search tape that is empty and can be writtingTape
@@ -173,7 +172,7 @@ namespace SBD_Project_1
 
         private void Distribute(int[] distribution)
         {
-            for (int i = 0; i < _tapesCount-1; i++)
+            for (int i = 0; i < Configuration.TAPES_COUNT-1; i++)
             {
                 for (int j = 0; j < distribution[i]; j++)
                 {

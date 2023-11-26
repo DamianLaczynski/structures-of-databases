@@ -21,8 +21,6 @@ namespace SBD_Project_1
     internal class Tape
     {
 
-        private static readonly int BufferSize = int.Parse(Configuration.configuration["bufferSize"]);
-        private readonly int MAX_RECORDS_IN_BUFFER = BufferSize/(15*sizeof(int));
         private Queue<Record> _queue = new Queue<Record>();
 
         private static int _tapeNumber = 1;
@@ -130,7 +128,7 @@ namespace SBD_Project_1
             }
             this._queue.Enqueue(record);
             _seriesCounter++;
-            if (_queue.Count == MAX_RECORDS_IN_BUFFER)
+            if (_queue.Count == Configuration.MAX_RECORDS_IN_BUFFER)
             {
                 _file.WriteBlock(ArrayConverter.ToByteArray(this._queue));
                 _queue.Clear();

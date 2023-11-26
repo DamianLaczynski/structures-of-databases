@@ -4,7 +4,7 @@ using SBD_Project_1.RecordGeneration;
 
 RecordFile file = new RecordFile("test.bin");
 RecordFilesGenerator generator = new RecordFilesGenerator(file);
-generator.Generate(13);
+generator.Generate(Configuration.RECORDS_COUNT);
 Console.WriteLine(file);
 SortingEngine engine = new SortingEngine(file);
 var result = engine.Sort();

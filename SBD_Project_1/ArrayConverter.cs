@@ -19,7 +19,6 @@ namespace SBD_Project_1.Models
                 Buffer.BlockCopy(temp, 0, byteArray, i * sizeof(int), sizeof(int));
             }
 
-            //Buffer.BlockCopy(intArray, 0, byteArray, 0, byteArray.Length); //TODO: check if this is needed
             return byteArray;
         }
         public static byte[] ToByteArray(Queue<Record> queue)
@@ -32,8 +31,6 @@ namespace SBD_Project_1.Models
                 Buffer.BlockCopy(temp, 0, byteArray, desOffset, temp.Length);
                 desOffset += temp.Length;
             }
-
-            //Buffer.BlockCopy(intArray, 0, byteArray, 0, byteArray.Length); //TODO: check if this is needed
             return byteArray;
         }
 
@@ -52,16 +49,15 @@ namespace SBD_Project_1.Models
         {
             Queue<Record> recordQueue = new Queue<Record>();
             int[] intArray = ArrayConverter.ToIntArray(byteArray);
-            int[] record = new int[NaturalNumbersSetRecord.MaxRecordLength];
+            int[] record = new int[Configuration.MAX_RECORD_LENGTH];
             for (int i = 0; i < intArray.Length; i++)
             {
 
-                record[i % NaturalNumbersSetRecord.MaxRecordLength] = intArray[i];
-                if (i % NaturalNumbersSetRecord.MaxRecordLength == NaturalNumbersSetRecord.MaxRecordLength-1)
+                record[i % Configuration.MAX_RECORD_LENGTH] = intArray[i];
+                if (i % Configuration.MAX_RECORD_LENGTH == Configuration.MAX_RECORD_LENGTH-1)
                 {
-                    //Console.WriteLine($"{i/NaturalNumbersSetRecord.MaxRecordLength}:{new NaturalNumbersSetRecord(record)}");
                     recordQueue.Enqueue((Record)new NaturalNumbersSetRecord(record));
-                    record = new int[NaturalNumbersSetRecord.MaxRecordLength];
+                    record = new int[Configuration.MAX_RECORD_LENGTH];
                 }
             }
             return recordQueue;
@@ -70,16 +66,15 @@ namespace SBD_Project_1.Models
         {
             List<Record> recordList = new List<Record>();
             int[] intArray = ArrayConverter.ToIntArray(byteArray);
-            int[] record = new int[NaturalNumbersSetRecord.MaxRecordLength];
+            int[] record = new int[Configuration.MAX_RECORD_LENGTH];
             for (int i = 0; i < intArray.Length; i++)
             {
 
-                record[i % NaturalNumbersSetRecord.MaxRecordLength] = intArray[i];
-                if (i % NaturalNumbersSetRecord.MaxRecordLength == NaturalNumbersSetRecord.MaxRecordLength-1)
+                record[i % Configuration.MAX_RECORD_LENGTH] = intArray[i];
+                if (i % Configuration.MAX_RECORD_LENGTH == Configuration.MAX_RECORD_LENGTH-1)
                 {
-                    //Console.WriteLine($"{i/NaturalNumbersSetRecord.MaxRecordLength}:{new NaturalNumbersSetRecord(record)}");
                     recordList.Add((Record)new NaturalNumbersSetRecord(record));
-                    record = new int[NaturalNumbersSetRecord.MaxRecordLength];
+                    record = new int[Configuration.MAX_RECORD_LENGTH];
                 }
             }
             return recordList;

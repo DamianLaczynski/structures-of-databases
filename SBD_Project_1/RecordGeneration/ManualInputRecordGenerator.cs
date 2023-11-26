@@ -9,7 +9,6 @@ namespace SBD_Project_1.Generation
 {
     internal class ManualInputRecordGenerator : RecordGenerator
     {
-        private readonly int _maxRecordLength = int.Parse(Configuration.configuration["maxRecordLength"]);
         //gets record from user input
         public override NaturalNumbersSetRecord GetRecord()
         {
@@ -22,9 +21,9 @@ namespace SBD_Project_1.Generation
                 string input = Console.ReadLine();
                 inputArray = input.Split(' ');
                 numbers = new int[inputArray.Length];
-                if (inputArray.Length > _maxRecordLength)
+                if (inputArray.Length > Configuration.MAX_RECORD_LENGTH)
                 {
-                    Console.WriteLine($"Record can't have more than {_maxRecordLength} elements");
+                    Console.WriteLine($"Record can't have more than {Configuration.MAX_RECORD_LENGTH} elements");
                     Console.WriteLine($"Please try again...");
                 }
                 else if(inputArray.Length == 0 || inputArray[0] == "")

@@ -10,22 +10,11 @@ namespace SBD_Project_1
 {
     public static class Configuration
     {
-       public static IConfigurationRoot configuration = new ConfigurationBuilder()
-    .AddInMemoryCollection(new Dictionary<string, string?>()
-    {
-        ["maxRecordLength"] = "15",
-        ["maxNumberInRecord"] = "100",
-        ["bufferSize"] = $"{2*15*sizeof(int)}", //max 13 records in buffer
-        ["recordsCount"] = "13",
-        ["tapesCount"] = "3"
-    })
-    .Build();
-
-
-        public static int MAX_RECORD_LENGTH = 15;
-        public static int MAX_NUMBER_IN_RECORD = 100;
-        public static int BUFFER_SIZE = 2 * MAX_RECORD_LENGTH * sizeof(int);
-        public static int RECORDS_COUNT = 13;
-        public static int TAPES_COUNT = 3;
+        public static readonly int MAX_RECORD_LENGTH = 15;
+        public static readonly int MAX_NUMBER_IN_RECORD = 100;
+        public static readonly int BUFFER_SIZE = 5 * MAX_RECORD_LENGTH * sizeof(int);
+        public static readonly int RECORDS_COUNT = 55;
+        public static readonly int TAPES_COUNT = 3;
+        public static readonly int MAX_RECORDS_IN_BUFFER = BUFFER_SIZE/(15*sizeof(int));
     }
 }

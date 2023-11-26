@@ -6,6 +6,5 @@ namespace SBD_Project_1.Generation
     {
         T GetRecord() ;
         List<T> GetRecords(int count);
-        //List<NaturalNumbersSetRecord> GetRecords(int count);
     }
 }

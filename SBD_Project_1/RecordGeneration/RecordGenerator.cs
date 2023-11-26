@@ -13,13 +13,11 @@ namespace SBD_Project_1.Generation
     {
         public virtual Record GetRecord()
         {
-            //throw new NotImplementedException();
             return new Record();
         }
 
         public virtual List<Record> GetRecords(int count)
         {
-            //throw new NotImplementedException();
             return new List<Record>();
         }
     }
