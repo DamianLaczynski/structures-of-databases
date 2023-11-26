@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 
 namespace SBD_Project_1
 {
@@ -17,25 +18,70 @@ namespace SBD_Project_1
         Read = 1,
         Write = 2
     }
-    internal class Tape : RecordFile
+    internal class Tape
     {
 
         private static readonly int BufferSize = int.Parse(Configuration.configuration["bufferSize"]);
-        private static readonly int MaxRecordInBuffer = BufferSize/15*sizeof(int);
-        private static int _tapeNumber = 1;
+        private readonly int MAX_RECORDS_IN_BUFFER = BufferSize/(15*sizeof(int));
         private Queue<Record> _queue = new Queue<Record>();
-        private TapeMode _mode;
 
-        public Tape() : base()
+        private static int _tapeNumber = 1;
+        private TapeMode _mode;
+        private RecordFile _file;
+
+        private int _seriesCount = 0;
+        private List<int> _seriesLengths = new List<int>();
+
+        public Tape()
         {
             _tapeNumber++;
-            this.Path = "tape" + _tapeNumber + ".dat";
+            _file = new RecordFile();
+            _file.Path = "tape" + _tapeNumber + ".bin";
+            if (!System.IO.File.Exists(_file.Path))
+            {
+                System.IO.File.Create(_file.Path);
+            }
         }
-        public Tape(TapeMode mode) : base()
+        public Tape(TapeMode mode)
         {
             _tapeNumber++;
-            this.Path = "tape" + _tapeNumber + ".dat";
+            _file = new RecordFile();
+            _file.Path = "tape" + _tapeNumber + ".bin";
             _mode = mode;
+
+            //create file if not exists
+            if (!System.IO.File.Exists(_file.Path))
+            {
+                System.IO.File.Create(_file.Path);
+            }
+        }
+
+        public Tape(RecordFile file)
+        {
+            _file = file;
+            _mode = TapeMode.Read;
+            var recordsCount = (int)(_file.GetLength()/ (sizeof(int) * Configuration.MAX_RECORD_LENGTH));
+            for (int i = 0; i < recordsCount; i++)
+            {
+                _seriesLengths.Add(1);
+            }
+        }
+        public Record[] GetSeries()
+        {
+            Record[] series = new Record[_seriesLengths.First()];
+            for (int i = 0; i < series.Length; i++)
+            {
+                series[i] = GetRecord();
+            }
+            return series;
+        }
+        public void SetSeries(Record[] series)
+        {
+            foreach (var record in series)
+            {
+                SetRecord(record);
+            }
+            _seriesLengths.Add(series.Length);
         }
 
         public Record GetRecord()
@@ -46,8 +92,19 @@ namespace SBD_Project_1
             }
             if (_queue.Count == 0)
             {
-                byte[] temp = this.ReadBlock(BufferSize);
+                byte[] temp = _file.ReadBlock(Configuration.BUFFER_SIZE);
                 _queue = ArrayConverter.ToRecordQueue(temp);
+            }
+            //update series count
+            if (_seriesLengths.First() == 1)
+            {
+                _seriesLengths.RemoveAt(0);
+            }
+            else
+            {
+                //decrement series length
+                var length = _seriesLengths.First();
+                _seriesLengths.Insert(0, length - 1);
             }
             return _queue.Dequeue();
         }
@@ -58,9 +115,10 @@ namespace SBD_Project_1
                 throw new Exception("Mode: READ. You cannot write now.");
             }
             this._queue.Enqueue(record);
-            if (_queue.Count == MaxRecordInBuffer)
+            if (_queue.Count == MAX_RECORDS_IN_BUFFER)
             {
-                this.WriteBlock(ArrayConverter.ToByteArray(this._queue));
+                _file.WriteBlock(ArrayConverter.ToByteArray(this._queue));
+                _queue.Clear();
             }
         }
 
@@ -69,6 +127,7 @@ namespace SBD_Project_1
             if(_queue.Count == 0)
             {
                 this._mode = mode;
+                //TODO: clear file or set pointer to 0
             }
             else
             {
@@ -78,15 +137,41 @@ namespace SBD_Project_1
                 }
                 else
                 {
-                    throw new Exception("There is unsaved content; Mode: WRITE");
+                    _file.WriteBlock(ArrayConverter.ToByteArray(this._queue));
+                    _queue.Clear();
                 }
             }
         }
 
+        public TapeMode GetMode() { return _mode; }
         public bool IsEmpty()
         {
             return _queue.Count == 0;
         }
 
+        public int GetSeriesCount()
+        {
+            return _seriesLengths.Count;
+        }
+
+        public void SetSeriesCount(int seriesCount)
+        {
+            _seriesCount = seriesCount;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override string? ToString()
+        {
+            return _file.ToString();
+        }
     }
 }

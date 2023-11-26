@@ -25,11 +25,12 @@ namespace SBD_Project_1.Models
         public static byte[] ToByteArray(Queue<Record> queue)
         {
             byte[] byteArray = new byte[queue.Count * 15 * sizeof(int)];
-
+            int desOffset = 0;
             foreach(Record record in queue)
             {
                 byte[] temp = ToByteArray(record.GetContent());
-                Buffer.BlockCopy(temp, 0, byteArray, 0, byteArray.Length);
+                Buffer.BlockCopy(temp, 0, byteArray, desOffset, temp.Length);
+                desOffset += temp.Length;
             }
 
             //Buffer.BlockCopy(intArray, 0, byteArray, 0, byteArray.Length); //TODO: check if this is needed

@@ -31,7 +31,7 @@ namespace SBD_Project_1.Models
         public byte[] ReadBlock(int blockSize)
         {
             ReadCount++;
-            byte[] block = new byte[blockSize];
+            byte[] block;
             if (File.Exists(Path))
             {
                 using (var stream = File.Open(Path, FileMode.Open))
@@ -39,7 +39,11 @@ namespace SBD_Project_1.Models
                     stream.Position = _readPointer;
                     using (var reader = new BinaryReader(stream, Encoding.UTF8, false))
                     {
-                        
+                        if(_readPointer + blockSize > stream.Length)
+                        {
+                            blockSize = (int)stream.Length - _readPointer;
+                        }
+                        block = new byte[blockSize];
                         reader.Read(block, 0, blockSize);
                         _readPointer += blockSize;
                     }
@@ -100,6 +104,19 @@ namespace SBD_Project_1.Models
             return ArrayConverter.ToRecordList(content);
         }
 
+        public long GetLength()
+        {             
+            if (File.Exists(Path))
+            {
+                FileInfo info = new FileInfo(Path);
+                return info.Length;
+            }
+            else
+            {
+                throw new FileNotFoundException("File not found");
+            }
+        }
+
         public override bool Equals(object? obj)
         {
             return base.Equals(obj);
@@ -113,9 +130,11 @@ namespace SBD_Project_1.Models
         public override string? ToString()
         {
             string result = $"File path: {Path}\nRead count: {ReadCount}\nWrite count: {WriteCount}";
+            int i = 1;
             foreach (var r in Read())
             {
-                result += $"\n{r}";
+                result += $"\n{i}: {r}";
+                i++;
             }
             return result;
         }
