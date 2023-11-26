@@ -11,7 +11,7 @@ namespace SBD_Project_1.Models
         public static readonly int MaxRecordLength = int.Parse(Configuration.configuration["maxRecordLength"]);
         private int[] _numbers { get; set; } = new int[MaxRecordLength];
 
-        public int PrimeNumbersCount { get; set; } = 0;
+        public override int Index { get; set; } = 0;
 
         public NaturalNumbersSetRecord(int[] numbers)
         {
@@ -26,7 +26,7 @@ namespace SBD_Project_1.Models
             else
             {
                 _numbers = numbers;
-                PrimeNumbersCount = PrimeNumbersCounter.Count(numbers);
+                Index = PrimeNumbersCounter.Count(numbers);
             }
         }
 
@@ -43,7 +43,7 @@ namespace SBD_Project_1.Models
             else
             {
                 _numbers = ArrayConverter.ToIntArray(numbers);
-                PrimeNumbersCount = PrimeNumbersCounter.Count(_numbers);
+                Index = PrimeNumbersCounter.Count(_numbers);
             }
         }
 
@@ -66,7 +66,7 @@ namespace SBD_Project_1.Models
 
         public override string ToString()
         {
-            string result = "";
+            string result = "Index:" + Index + "| ";
             foreach (int number in _numbers)
             {
                 result += number + " ";

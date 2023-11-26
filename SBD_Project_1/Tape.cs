@@ -117,6 +117,7 @@ namespace SBD_Project_1
             {
                 //decrement series length
                 var length = _seriesLengths.First();
+                _seriesLengths.RemoveAt(0);
                 _seriesLengths.Insert(0, length - 1);
             }
             return _queue.Dequeue();
@@ -140,8 +141,8 @@ namespace SBD_Project_1
         {
             if(_queue.Count == 0)
             {
-                this._mode = mode;
-                if(mode == TapeMode.Read)
+                
+                if(mode == TapeMode.Read && this._mode != TapeMode.Read)
                 {
                     _file.SetReadPointer(0);
                 }
@@ -149,10 +150,11 @@ namespace SBD_Project_1
                 {
                     _file.OverrideFile();
                 }
+                this._mode = mode;
             }
             else
             {
-                if(this._mode == TapeMode.Read)
+                if(this._mode == TapeMode.Read && mode == TapeMode.Write)
                 {
                     throw new Exception("There is any content; Mode: READ");
                 }
@@ -164,16 +166,31 @@ namespace SBD_Project_1
                 }
             }
         }
+        public void Close()
+        {
+            if(_mode == TapeMode.Write)
+            {
+                _file.WriteBlock(ArrayConverter.ToByteArray(this._queue));
+                _queue.Clear();
+            }
+        }
 
         public TapeMode GetMode() { return _mode; }
         public bool IsEmpty()
         {
-            return _queue.Count == 0;
+            return _seriesLengths.Count == 0;
         }
 
+        //returns number of series in tape
         public int GetSeriesCount()
         {
             return _seriesLengths.Count;
+        }
+
+        //returns length of first series
+        public int GetSeriesLength()
+        {
+            return _seriesLengths.First();
         }
 
         public override bool Equals(object? obj)
@@ -189,6 +206,11 @@ namespace SBD_Project_1
         public override string? ToString()
         {
             return _file.ToString();
+        }
+
+        public RecordFile GetFile()
+        {
+            return _file;
         }
     }
 }

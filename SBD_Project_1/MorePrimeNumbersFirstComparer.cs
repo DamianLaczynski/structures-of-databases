@@ -7,21 +7,22 @@ using System.Threading.Tasks;
 
 namespace SBD_Project_1
 {
-    internal class MorePrimeNumbersFirstComparer : Comparer<NaturalNumbersSetRecord>
+    internal class MorePrimeNumbersFirstComparer : IComparer<Record>
     {
-        public override int Compare(NaturalNumbersSetRecord? x, NaturalNumbersSetRecord? y)
+
+        int IComparer<Record>.Compare(Record? x, Record? y)
         {
             if (x == null || y == null)
             {
                 throw new ArgumentNullException();
             }
-            if (x.PrimeNumbersCount > y.PrimeNumbersCount)
-            {
-                return -1;
-            }
-            else if (x.PrimeNumbersCount < y.PrimeNumbersCount)
+            if (x.Index > y.Index)
             {
                 return 1;
+            }
+            else if (x.Index < y.Index)
+            {
+                return -1;
             }
             else
             {

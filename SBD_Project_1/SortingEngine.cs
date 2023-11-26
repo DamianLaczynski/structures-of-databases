@@ -11,16 +11,18 @@ namespace SBD_Project_1
     {
         private readonly RecordFile _file;
         private readonly int _tapesCount = Configuration.TAPES_COUNT;
-        private Tape[] _tapes;
+        private List<Tape> _tapes;
         private Tape _sourceTape;
 
         private Tape _writtingTape;
+        private Tape[] _readingTapes;
+        private MorePrimeNumbersFirstComparer _comparer = new MorePrimeNumbersFirstComparer();
 
         public SortingEngine(RecordFile file)
         {
             _file = file;
         }
-        
+
 
         private void Init()
         {
@@ -31,9 +33,9 @@ namespace SBD_Project_1
             int[] distribution = CalculateDistribution(_sourceTape.GetSeriesCount());
 
             //distribute
-            if(distribution is not null)
+            if (distribution is not null)
                 Distribute(distribution);
-            
+
         }
 
         private void CreateTapes()
@@ -41,29 +43,72 @@ namespace SBD_Project_1
             //define sourse tape
             _sourceTape = new Tape(_file);
             //define tapes for distribution
-            _tapes = new Tape[_tapesCount];
+            _tapes = new List<Tape>(_tapesCount);
             for (int i = 0; i < _tapesCount-1; i++)
             {
-                _tapes[i] = new Tape(TapeMode.Write);
+                _tapes.Add(new Tape(TapeMode.Write));
             }
-            _tapes[_tapesCount - 1] = _sourceTape;
+            _tapes.Add(_sourceTape);
         }
 
-        public void Sort()
+        public RecordFile Sort()
         {
             Init();
-            while(_tapes.Select(t => t.GetSeriesCount()).Sum() > 1)
+            while (_tapes.Select(t => t.GetSeriesCount()).Sum() > 1)
             {
                 Step();
             }
+            foreach (Tape t in _tapes)
+            {
+                t.Close();
+            }
+            var result = _tapes.Find(t => t.GetSeriesCount() == 1);
+            return result.GetFile();
         }
 
         void Step()
         {
-            //preapare tape for writting
-            _writtingTape = findTapeToWritting();
-            //preapare tapes for reading
-            setTapesForReading();
+            changeTapesMode();
+
+            Record[] records = new Record[Configuration.TAPES_COUNT-1];
+            for(int i = 0; i < Configuration.TAPES_COUNT-1; i++)
+            {
+                records[i] = null;
+            }
+            int[] seriesLength = new int[Configuration.TAPES_COUNT-1];
+            while (!_readingTapes.Any(t => t.GetSeriesCount() == 0))
+            {
+                for (int i = 0; i < Configuration.TAPES_COUNT-1; i++)
+                {
+                    seriesLength[i] = _readingTapes[i].GetSeriesLength();
+                }
+                while (seriesLength.Sum() > 0 || records.Any(r => r != null))
+                {
+                    for (int i = 0; i < Configuration.TAPES_COUNT-1; i++)
+                    {
+                        if (seriesLength[i] > 0)
+                        {
+                            if (records[i] is null)
+                            {
+                                records[i] = _readingTapes[i].GetRecord();
+                                seriesLength[i]--;
+                            }
+                        }
+                    }
+                    //find min and set to writting tape
+                    var temp = records.ToList().Min(_comparer);
+                    for (int i = 0; i < Configuration.TAPES_COUNT-1; i++)
+                    {
+                        if (records[i] is not null && records[i].Equals(temp))
+                        {
+                            _writtingTape.SetRecord(records[i]);
+                            records[i] = null;
+                        }
+                    }
+                }
+                _writtingTape.EndOfSeries();
+            }
+
         }
 
         private int[] CalculateDistribution(int seriesCount)
@@ -74,9 +119,9 @@ namespace SBD_Project_1
         //search tape that is empty and can be writtingTape
         private Tape findTapeToWritting()
         {
-            foreach(Tape t in _tapes)
+            foreach (Tape t in _tapes)
             {
-                if(t.IsEmpty() && t.GetMode() == TapeMode.Read)
+                if (t.IsEmpty() && t.GetMode() == TapeMode.Read)
                 {
                     t.SetMode(TapeMode.Write);
                     return t;
@@ -89,7 +134,7 @@ namespace SBD_Project_1
         // !!! use only after findTapeToWritting
         private void setTapesForReading()
         {
-            if(_writtingTape is null)
+            if (_writtingTape is null)
             {
                 throw new NullReferenceException("Writting Tape is null");
             }
@@ -100,14 +145,30 @@ namespace SBD_Project_1
                     if (t != _writtingTape)
                     {
                         t.SetMode(TapeMode.Read);
+
                     }
                 }
             }
         }
 
+        private void changeTapesMode()
+        {
+            //preapare tape for writting
+            //find tape that is empty and before was in read mode
+            _writtingTape = _tapes.Find(t => t.GetMode() == TapeMode.Read && t.IsEmpty());
+            _writtingTape.SetMode(TapeMode.Write);
+            Console.WriteLine($"Writting tape: {_writtingTape}");
+
+            //preapare tapes for reading
+            //find tapes that are not writting tape and set mode to read
+            _readingTapes = _tapes.FindAll(t => t != _writtingTape).ToArray();
+            _readingTapes.ToList().ForEach(t => t.SetMode(TapeMode.Read));
+            Console.WriteLine($"Reading tapes: {string.Join(", ", _readingTapes.ToList())}");
+        }
+
         public void GetSequece()
         {
-            throw new NotImplementedException();   
+            throw new NotImplementedException();
         }
 
         private void Distribute(int[] distribution)
