@@ -41,6 +41,10 @@ namespace SBD_Project_1
             {
                 System.IO.File.Create(_file.Path);
             }
+            else
+            {
+                _file.OverrideFile();
+            }
         }
         public Tape(TapeMode mode)
         {
@@ -53,6 +57,10 @@ namespace SBD_Project_1
             if (!System.IO.File.Exists(_file.Path))
             {
                 System.IO.File.Create(_file.Path);
+            }
+            else
+            {
+                _file.OverrideFile();
             }
         }
 
@@ -133,7 +141,14 @@ namespace SBD_Project_1
             if(_queue.Count == 0)
             {
                 this._mode = mode;
-                //TODO: clear file or set pointer to 0
+                if(mode == TapeMode.Read)
+                {
+                    _file.SetReadPointer(0);
+                }
+                else if(mode == TapeMode.Write)
+                {
+                    _file.OverrideFile();
+                }
             }
             else
             {
@@ -141,10 +156,11 @@ namespace SBD_Project_1
                 {
                     throw new Exception("There is any content; Mode: READ");
                 }
-                else
+                else if(this._mode == TapeMode.Write)
                 {
                     _file.WriteBlock(ArrayConverter.ToByteArray(this._queue));
                     _queue.Clear();
+                    SetMode(mode);
                 }
             }
         }

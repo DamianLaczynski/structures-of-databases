@@ -117,6 +117,19 @@ namespace SBD_Project_1.Models
             }
         }
 
+        public void SetReadPointer(long position)
+        {
+            _readPointer = (int)position;
+        }
+
+        public void OverrideFile()
+        {
+            using (var stream = File.Open(Path, FileMode.Truncate))
+            {
+                stream.SetLength(0);
+            }
+        }
+
         public override bool Equals(object? obj)
         {
             return base.Equals(obj);
