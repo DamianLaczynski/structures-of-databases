@@ -29,7 +29,7 @@ namespace SBD_Project_1
         private TapeMode _mode;
         private RecordFile _file;
 
-        private int _seriesCount = 0;
+        private int _seriesCounter = 0;
         private List<int> _seriesLengths = new List<int>();
 
         public Tape()
@@ -83,6 +83,11 @@ namespace SBD_Project_1
             }
             _seriesLengths.Add(series.Length);
         }
+        public void EndOfSeries()
+        {
+            _seriesLengths.Add(_seriesCounter);
+            _seriesCounter = 0;
+        }
 
         public Record GetRecord()
         {
@@ -115,6 +120,7 @@ namespace SBD_Project_1
                 throw new Exception("Mode: READ. You cannot write now.");
             }
             this._queue.Enqueue(record);
+            _seriesCounter++;
             if (_queue.Count == MAX_RECORDS_IN_BUFFER)
             {
                 _file.WriteBlock(ArrayConverter.ToByteArray(this._queue));
@@ -152,11 +158,6 @@ namespace SBD_Project_1
         public int GetSeriesCount()
         {
             return _seriesLengths.Count;
-        }
-
-        public void SetSeriesCount(int seriesCount)
-        {
-            _seriesCount = seriesCount;
         }
 
         public override bool Equals(object? obj)

@@ -116,11 +116,11 @@ namespace SBD_Project_1
             {
                 for (int j = 0; j < distribution[i]; j++)
                 {
-                    Record[] records = _sourceTape.GetSeries();
-                    Console.WriteLine($"{j}Move to {i} tape:{records}");
-                    _tapes[i].SetSeries(records);
+                    Record record = _sourceTape.GetRecord();
+                    Console.WriteLine($"{j}Move to {i} tape:{record}");
+                    _tapes[i].SetRecord(record);
+                    _tapes[i].EndOfSeries();
                 }
-                _tapes[i].SetSeriesCount(distribution[i]);
             }
         }
     }
