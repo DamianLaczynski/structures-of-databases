@@ -208,6 +208,7 @@ namespace SBD_Project_1
 
         public RecordFile GetFile()
         {
+            _file.SetReadPointer(0);
             return _file;
         }
     }

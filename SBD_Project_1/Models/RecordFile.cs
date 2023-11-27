@@ -90,10 +90,20 @@ namespace SBD_Project_1.Models
 
                 using (var stream = File.Open(Path, FileMode.Open))
                 {
+                    stream.Position = _readPointer;
+                    long blockSize = stream.Length - _readPointer;
                     using (var reader = new BinaryReader(stream, Encoding.UTF8, false))
                     {
-                        content = new byte[stream.Length];
-                        reader.Read(content, 0, (int)stream.Length);
+                        if (stream.Length == 0)
+                        {
+                            return new List<Record>();
+                        }
+                        else
+                        {
+                            content = new byte[blockSize];
+                            reader.Read(content, 0, (int)blockSize);
+                        }
+                        
                     }
                 }
             }
