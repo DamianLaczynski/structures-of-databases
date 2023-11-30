@@ -34,14 +34,14 @@ namespace SBD_Project_1
         {
             _tapeNumber++;
             _mode = mode;
-            CreateFile();
+            _file = CreateFile();
         }
 
         public Tape(RecordFile file)
         {
             _mode = TapeMode.Read;
             _file = file;
-
+            //TODO: releace with merging records on distribution
             var recordsCount = (int)(_file.GetLength()/ (sizeof(int) * Configuration.MAX_RECORD_LENGTH));
             for (int i = 0; i < recordsCount; i++)
             {
@@ -178,10 +178,10 @@ namespace SBD_Project_1
             return _file;
         }
 
-        private void CreateFile()
+        private RecordFile CreateFile()
         {
             var path = "tape" + _tapeNumber + ".bin";
-            _file = new RecordFile(path, FileMode.Create);
+            return new RecordFile(path, FileMode.Create);
         }
     }
 }
