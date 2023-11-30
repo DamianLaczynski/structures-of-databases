@@ -107,7 +107,12 @@ namespace SBD_Project_1
                 _queue = ArrayConverter.ToRecordQueue(temp);
             }
             //update series count
-            if (_seriesLengths.First() == 1)
+            if (_seriesLengths.First() == 0)
+            {
+                _seriesLengths.RemoveAt(0);
+                return null;
+            }
+            else if (_seriesLengths.First() == 1)
             {
                 _seriesLengths.RemoveAt(0);
             }

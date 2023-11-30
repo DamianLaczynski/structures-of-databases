@@ -22,7 +22,6 @@ namespace SBD_Project_1
             _file = file;
         }
 
-
         private void Init()
         {
             //define sourse tape
@@ -34,7 +33,6 @@ namespace SBD_Project_1
             //distribute
             if (distribution is not null)
                 Distribute(distribution);
-
         }
 
         private void CreateTapes()
@@ -90,7 +88,10 @@ namespace SBD_Project_1
                             if (records[i] is null)
                             {
                                 records[i] = _readingTapes[i].GetRecord();
-                                seriesLength[i]--;
+                                if (records[i] is not null)
+                                {
+                                    seriesLength[i]--;
+                                }
                             }
                         }
                     }
@@ -105,6 +106,8 @@ namespace SBD_Project_1
                         }
                     }
                 }
+                if (_readingTapes.Any(t => !t.IsEmpty() && t.GetSeriesLength() == 0))
+                    _readingTapes.ToList().Find(t => t.GetSeriesLength() == 0).GetRecord();
                 _writtingTape.EndOfSeries();
             }
 
@@ -170,8 +173,23 @@ namespace SBD_Project_1
             throw new NotImplementedException();
         }
 
+        //in _tapes last tape is source tape
+        
+
         private void Distribute(int[] distribution)
         {
+            //SetEmptySeries();
+            if(distribution.Sum() != _sourceTape.GetSeriesCount())
+            {
+               var emptySeriesCount = distribution.Sum() - Configuration.RECORDS_COUNT;
+                //add empty series to tape with more series
+                for (int i = 0; i < emptySeriesCount; i++)
+                {
+                    _tapes[Configuration.TAPES_COUNT-2].EndOfSeries();
+                }
+                //update distribution
+                distribution[Configuration.TAPES_COUNT-2] -= emptySeriesCount;
+            }
             for (int i = 0; i < Configuration.TAPES_COUNT-1; i++)
             {
                 for (int j = 0; j < distribution[i]; j++)

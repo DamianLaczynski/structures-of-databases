@@ -149,16 +149,24 @@ namespace SBD_Project_1.Models
         {
             return base.GetHashCode();
         }
-
-        public override string? ToString()
+        public void Print()
         {
-            string result = $"File path: {Path}\nRead count: {ReadCount}\nWrite count: {WriteCount}";
+            //display file info
+            Console.WriteLine(this.ToString());
+
+            //Display all records
             int i = 1;
             foreach (var r in Read())
             {
-                result += $"\n{i}: {r}";
+                Console.WriteLine($"{i}: {r}\n");
                 i++;
             }
+        }   
+
+        public override string? ToString()
+        {
+            //return file info
+            string result = $"File path: {Path}\nRead count: {ReadCount}\nWrite count: {WriteCount}\n";
             return result;
         }
     }

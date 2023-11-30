@@ -9,4 +9,4 @@ Console.WriteLine(file);
 SortingEngine engine = new SortingEngine(file);
 var result = engine.Sort();
 Console.WriteLine("Result");
-Console.WriteLine(result);
+result.Print();
