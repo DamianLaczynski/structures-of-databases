@@ -2,7 +2,7 @@
 using SBD_Project_1.Models;
 using SBD_Project_1.RecordGeneration;
 
-RecordFile file = new RecordFile("test.bin");
+RecordFile file = new RecordFile("test.bin", FileMode.Open);
 RecordFilesGenerator generator = new RecordFilesGenerator(file);
 generator.Generate(Configuration.RECORDS_COUNT);
 Console.WriteLine(file);

@@ -11,54 +11,67 @@ namespace SBD_Project_1.Models
     {
         public int ReadCount { get; set; }
         public int WriteCount { get; set; }
-        public string Path { get; set; }
+        private string Path { get; set; }
 
         private int _readPointer = 0;
 
-        public RecordFile() 
-        {
-            ReadCount = 0;
-            WriteCount = 0;
-        }
+        private long _recordsCount = 0;
 
-        public RecordFile(string path)
+        public RecordFile(string path, FileMode mode)
         {
             Path = path;
             ReadCount = 0;
             WriteCount = 0;
+
+            SetFileMode(mode);
+        }
+
+        private void SetFileMode(FileMode mode)
+        {
+            switch (mode)
+            {
+                case FileMode.Create:
+                    if (File.Exists(Path))
+                        File.Delete(Path);
+
+                    File.Create(Path);
+                    break;
+                case FileMode.Open:
+                    if (!File.Exists(Path))
+                        throw new FileNotFoundException("File not found");
+                    break;
+                default:
+                    throw new ArgumentException("Wrong file mode");
+            }
         }
 
         public byte[] ReadBlock(int blockSize)
         {
             ReadCount++;
+
             byte[] block;
-            if (File.Exists(Path))
+            using (var stream = File.Open(Path, FileMode.Open))
             {
-                using (var stream = File.Open(Path, FileMode.Open))
+                stream.Position = _readPointer;
+                using (var reader = new BinaryReader(stream, Encoding.UTF8, false))
                 {
-                    stream.Position = _readPointer;
-                    using (var reader = new BinaryReader(stream, Encoding.UTF8, false))
+                    if (_readPointer + blockSize > stream.Length)
                     {
-                        if(_readPointer + blockSize > stream.Length)
-                        {
-                            blockSize = (int)stream.Length - _readPointer;
-                        }
-                        block = new byte[blockSize];
-                        reader.Read(block, 0, blockSize);
-                        _readPointer += blockSize;
+                        blockSize = (int)stream.Length - _readPointer;
                     }
+                    block = new byte[blockSize];
+                    reader.Read(block, 0, blockSize);
+                    _readPointer += blockSize;
                 }
             }
-            else
-            {
-                throw new FileNotFoundException("File not found");
-            }
+
             return block;
         }
 
         public void WriteBlock(byte[] block)
         {
             WriteCount++;
+
             using (var stream = File.Open(Path, FileMode.Append))
             {
                 using (var writer = new BinaryWriter(stream, Encoding.UTF8, false))
@@ -85,46 +98,32 @@ namespace SBD_Project_1.Models
         public List<Record> Read()
         {
             byte[] content;
-            if (File.Exists(Path))
-            {
 
-                using (var stream = File.Open(Path, FileMode.Open))
+            using (var stream = File.Open(Path, FileMode.Open))
+            {
+                stream.Position = _readPointer;
+                long blockSize = stream.Length - _readPointer;
+                using (var reader = new BinaryReader(stream, Encoding.UTF8, false))
                 {
-                    stream.Position = _readPointer;
-                    long blockSize = stream.Length - _readPointer;
-                    using (var reader = new BinaryReader(stream, Encoding.UTF8, false))
+                    if (stream.Length == 0)
                     {
-                        if (stream.Length == 0)
-                        {
-                            return new List<Record>();
-                        }
-                        else
-                        {
-                            content = new byte[blockSize];
-                            reader.Read(content, 0, (int)blockSize);
-                        }
-                        
+                        return new List<Record>();
+                    }
+                    else
+                    {
+                        content = new byte[blockSize];
+                        reader.Read(content, 0, (int)blockSize);
                     }
                 }
             }
-            else
-            {
-                throw new FileNotFoundException("File not found");
-            }
+
             return ArrayConverter.ToRecordList(content);
         }
 
         public long GetLength()
-        {             
-            if (File.Exists(Path))
-            {
-                FileInfo info = new FileInfo(Path);
-                return info.Length;
-            }
-            else
-            {
-                throw new FileNotFoundException("File not found");
-            }
+        {
+            FileInfo info = new FileInfo(Path);
+            return info.Length;
         }
 
         public void SetReadPointer(long position)
@@ -151,21 +150,20 @@ namespace SBD_Project_1.Models
         }
         public void Print()
         {
-            //display file info
+            //print file info
             Console.WriteLine(this.ToString());
 
-            //Display all records
+            //print all records in file
             int i = 1;
             foreach (var r in Read())
             {
                 Console.WriteLine($"{i}: {r}\n");
                 i++;
             }
-        }   
+        }
 
         public override string? ToString()
         {
-            //return file info
             string result = $"File path: {Path}\nRead count: {ReadCount}\nWrite count: {WriteCount}\n";
             return result;
         }

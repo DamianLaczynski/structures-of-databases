@@ -27,72 +27,33 @@ namespace SBD_Project_1
         private TapeMode _mode;
         private RecordFile _file;
 
-        private int _seriesCounter = 0;
+        private int _recordsInSerieCounter = 0;
         private List<int> _seriesLengths = new List<int>();
 
-        public Tape()
-        {
-            _tapeNumber++;
-            _file = new RecordFile();
-            _file.Path = "tape" + _tapeNumber + ".bin";
-            if (!System.IO.File.Exists(_file.Path))
-            {
-                System.IO.File.Create(_file.Path);
-            }
-            else
-            {
-                _file.OverrideFile();
-            }
-        }
         public Tape(TapeMode mode)
         {
             _tapeNumber++;
-            _file = new RecordFile();
-            _file.Path = "tape" + _tapeNumber + ".bin";
             _mode = mode;
-
-            //create file if not exists
-            if (!System.IO.File.Exists(_file.Path))
-            {
-                System.IO.File.Create(_file.Path);
-            }
-            else
-            {
-                _file.OverrideFile();
-            }
+            CreateFile();
         }
 
         public Tape(RecordFile file)
         {
-            _file = file;
             _mode = TapeMode.Read;
+            _file = file;
+
             var recordsCount = (int)(_file.GetLength()/ (sizeof(int) * Configuration.MAX_RECORD_LENGTH));
             for (int i = 0; i < recordsCount; i++)
             {
                 _seriesLengths.Add(1);
             }
+
         }
-        public Record[] GetSeries()
-        {
-            Record[] series = new Record[_seriesLengths.First()];
-            for (int i = 0; i < series.Length; i++)
-            {
-                series[i] = GetRecord();
-            }
-            return series;
-        }
-        public void SetSeries(Record[] series)
-        {
-            foreach (var record in series)
-            {
-                SetRecord(record);
-            }
-            _seriesLengths.Add(series.Length);
-        }
+
         public void EndOfSeries()
         {
-            _seriesLengths.Add(_seriesCounter);
-            _seriesCounter = 0;
+            _seriesLengths.Add(_recordsInSerieCounter);
+            _recordsInSerieCounter = 0;
         }
 
         public Record GetRecord()
@@ -132,7 +93,7 @@ namespace SBD_Project_1
                 throw new Exception("Mode: READ. You cannot write now.");
             }
             this._queue.Enqueue(record);
-            _seriesCounter++;
+            _recordsInSerieCounter++;
             if (_queue.Count == Configuration.MAX_RECORDS_IN_BUFFER)
             {
                 _file.WriteBlock(ArrayConverter.ToByteArray(this._queue));
@@ -215,6 +176,12 @@ namespace SBD_Project_1
         {
             _file.SetReadPointer(0);
             return _file;
+        }
+
+        private void CreateFile()
+        {
+            var path = "tape" + _tapeNumber + ".bin";
+            _file = new RecordFile(path, FileMode.Create);
         }
     }
 }
