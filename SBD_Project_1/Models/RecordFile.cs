@@ -28,17 +28,24 @@ namespace SBD_Project_1.Models
 
         private void SetFileMode(FileMode mode)
         {
+            
             switch (mode)
             {
                 case FileMode.Create:
                     if (File.Exists(Path))
                         File.Delete(Path);
 
-                    File.Create(Path);
+                    using (File.Create(Path)) ;
                     break;
                 case FileMode.Open:
                     if (!File.Exists(Path))
                         throw new FileNotFoundException("File not found");
+                    break;
+                case FileMode.OpenOrCreate:
+                    if (!File.Exists(Path))
+                    {
+                        using (File.Create(Path)) ;
+                    }
                     break;
                 default:
                     throw new ArgumentException("Wrong file mode");
