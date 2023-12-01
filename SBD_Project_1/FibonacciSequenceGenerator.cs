@@ -23,6 +23,23 @@ namespace SBD_Project_1
             return sequence;
         }
 
+        //generates n-th fibonacci number
+        public static long Get(int n)
+        {
+            if (n == 0 || n == 1)
+                return 1;
+
+            long a = 1;
+            long b = 1;
+            for (int i = 2; i < n; i++)
+            {
+                long temp = a;
+                a = b;
+                b = temp + b;
+            }
+            return b;
+        }
+
         //generates part of sequence of n fibonacci numbers that sum is greater or equal m
         public static int[] GenerateDistribution(int n, int m)
         {

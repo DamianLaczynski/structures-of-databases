@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,13 +27,9 @@ namespace SBD_Project_1
         {
             //define sourse tape
             CreateTapes();
-
-            //calculate distribution
-            int[] distribution = CalculateDistribution(_sourceTape.GetSeriesCount());
-
-            //distribute
-            if (distribution is not null)
-                Distribute(distribution);
+            Console.WriteLine("Start distributing");
+            Distribute();
+            Console.WriteLine("End distributing");
         }
 
         private void CreateTapes()
@@ -51,15 +48,17 @@ namespace SBD_Project_1
         public RecordFile Sort()
         {
             Init();
-            while (_tapes.Select(t => t.GetSeriesCount()).Sum() > 1)
+            Console.WriteLine("Start sorting");
+            while (_tapes.Select(t => t.SeriesCount + t.EmptySeriesCount).Sum() > 1)
             {
                 Step();
             }
+            Console.WriteLine("End sorting");
             foreach (Tape t in _tapes)
             {
                 t.Close();
             }
-            var result = _tapes.Find(t => t.GetSeriesCount() == 1);
+            var result = _tapes.Find(t => t.SeriesCount == 1);
             return result.GetFile();
         }
 
@@ -67,90 +66,24 @@ namespace SBD_Project_1
         {
             changeTapesMode();
 
-            Record[] records = new Record[Configuration.TAPES_COUNT-1];
-            for(int i = 0; i < Configuration.TAPES_COUNT-1; i++)
+            while (!_readingTapes.Any(t => t.SeriesCount == 0))
             {
-                records[i] = null;
-            }
-            int[] seriesLength = new int[Configuration.TAPES_COUNT-1];
-            while (!_readingTapes.Any(t => t.GetSeriesCount() == 0))
-            {
-                for (int i = 0; i < Configuration.TAPES_COUNT-1; i++)
+                if (_readingTapes.Any(t => t.EmptySeriesCount > 0))
                 {
-                    seriesLength[i] = _readingTapes[i].GetSeriesLength();
+                    SetSerie(_readingTapes.ToList().Find(t => t.EmptySeriesCount == 0), _writtingTape);
+                    _readingTapes.ToList().Find(t => t.EmptySeriesCount == 0).SeriesCount--;
+                    _readingTapes.ToList().Find(t => t.EmptySeriesCount > 0).EmptySeriesCount--;
                 }
-                while (seriesLength.Sum() > 0 || records.Any(r => r != null))
+                else
                 {
-                    for (int i = 0; i < Configuration.TAPES_COUNT-1; i++)
-                    {
-                        if (seriesLength[i] > 0)
-                        {
-                            if (records[i] is null)
-                            {
-                                records[i] = _readingTapes[i].GetRecord();
-                                if (records[i] is not null)
-                                {
-                                    seriesLength[i]--;
-                                }
-                            }
-                        }
-                    }
-                    //find min and set to writting tape
-                    var temp = records.ToList().Min(_comparer);
-                    for (int i = 0; i < Configuration.TAPES_COUNT-1; i++)
-                    {
-                        if (records[i] is not null && records[i].Equals(temp))
-                        {
-                            _writtingTape.SetRecord(records[i]);
-                            records[i] = null;
-                        }
-                    }
+                    SetAndMerge(_readingTapes, _writtingTape);
                 }
-                if (_readingTapes.Any(t => !t.IsEmpty() && t.GetSeriesLength() == 0))
-                    _readingTapes.ToList().Find(t => t.GetSeriesLength() == 0).GetRecord();
-                _writtingTape.EndOfSeries();
             }
-
         }
 
         private int[] CalculateDistribution(int seriesCount)
         {
             return FibonacciSequenceGenerator.GenerateDistribution(Configuration.TAPES_COUNT-1, seriesCount);
-        }
-
-        //search tape that is empty and can be writtingTape
-        private Tape findTapeToWritting()
-        {
-            foreach (Tape t in _tapes)
-            {
-                if (t.IsEmpty() && t.GetMode() == TapeMode.Read)
-                {
-                    t.SetMode(TapeMode.Write);
-                    return t;
-                }
-            }
-            throw new Exception("There is no empty tape for writting");
-        }
-
-        //set TapeMode to Read for tapes that is not WrittingTape
-        // !!! use only after findTapeToWritting
-        private void setTapesForReading()
-        {
-            if (_writtingTape is null)
-            {
-                throw new NullReferenceException("Writting Tape is null");
-            }
-            else
-            {
-                foreach (Tape t in _tapes)
-                {
-                    if (t != _writtingTape)
-                    {
-                        t.SetMode(TapeMode.Read);
-
-                    }
-                }
-            }
         }
 
         private void changeTapesMode()
@@ -159,47 +92,116 @@ namespace SBD_Project_1
             //find tape that is empty and before was in read mode
             _writtingTape = _tapes.Find(t => t.GetMode() == TapeMode.Read && t.IsEmpty());
             _writtingTape.SetMode(TapeMode.Write);
-            Console.WriteLine($"Writting tape: {_writtingTape}");
+            //Console.WriteLine($"Writting tape: {_writtingTape}");
 
             //preapare tapes for reading
             //find tapes that are not writting tape and set mode to read
             _readingTapes = _tapes.FindAll(t => t != _writtingTape).ToArray();
             _readingTapes.ToList().ForEach(t => t.SetMode(TapeMode.Read));
-            Console.WriteLine($"Reading tapes: {string.Join(", ", _readingTapes.ToList())}");
-        }
-
-        public void GetSequece()
-        {
-            throw new NotImplementedException();
+            //Console.WriteLine($"Reading tapes: {string.Join(", ", _readingTapes.ToList())}");
         }
 
         //in _tapes last tape is source tape
-        
 
-        private void Distribute(int[] distribution)
+
+        private void Distribute()
         {
-            //SetEmptySeries();
-            if(distribution.Sum() != _sourceTape.GetSeriesCount())
+            Record[] lastOnTape = new Record[Configuration.TAPES_COUNT-1];
+            for(int j = 0; j < Configuration.TAPES_COUNT-1; j++)
             {
-               var emptySeriesCount = distribution.Sum() - Configuration.RECORDS_COUNT;
-                //add empty series to tape with more series
-                for (int i = 0; i < emptySeriesCount; i++)
-                {
-                    _tapes[Configuration.TAPES_COUNT-2].EndOfSeries();
-                }
-                //update distribution
-                distribution[Configuration.TAPES_COUNT-2] -= emptySeriesCount;
+                lastOnTape[j] = null;
             }
-            for (int i = 0; i < Configuration.TAPES_COUNT-1; i++)
+            int i = 0;
+            while (!_sourceTape.IsEmpty())
             {
-                for (int j = 0; j < distribution[i]; j++)
+                for (int j = 0; j < FibonacciSequenceGenerator.Get(i); j++)
                 {
-                    Record record = _sourceTape.GetRecord();
-                    Console.WriteLine($"{j}Move to {i} tape:{record}");
-                    _tapes[i].SetRecord(record);
-                    _tapes[i].EndOfSeries();
+                    if (lastOnTape[i % (Configuration.TAPES_COUNT - 1)] is not null &&
+                        _sourceTape.GetNextRecord() is not null &&
+                        lastOnTape[i % (Configuration.TAPES_COUNT - 1)].Index < _sourceTape.GetNextRecord().Index)
+                    {
+                        lastOnTape[i%(Configuration.TAPES_COUNT-1)] = SetSerie(_sourceTape, _tapes[i%(Configuration.TAPES_COUNT-1)]);
+                        _tapes[i%(Configuration.TAPES_COUNT-1)].SeriesCount--;
+                    }
+                    lastOnTape[i%(Configuration.TAPES_COUNT-1)] = SetSerie(_sourceTape, _tapes[i%(Configuration.TAPES_COUNT-1)]);
+                }
+                i++;
+            }
+        }
+
+        private Record SetSerie(Tape source, Tape destination)
+        {
+            Record last = null;
+            while (true)
+            {
+                Record record = source.GetRecord();
+                if (record is null)
+                {
+                    destination.EmptySeriesCount++;
+                    
+                    break;
+                }
+                last = record;
+                destination.SetRecord(record);
+                //Console.WriteLine($"Move to {destination.GetName()}:{record}");
+                Record nextRecord = source.GetNextRecord();
+                if (nextRecord is null)
+                {
+                    destination.SeriesCount++;
+                    
+                    break;
+                }
+                else if (record.Index > nextRecord.Index)
+                {
+                    destination.SeriesCount++;
+                    
+                    break;
                 }
             }
+            return last;
+        }
+
+        private void SetAndMerge(Tape[] sources, Tape destination)
+        {
+            Record[] records = new Record[Configuration.TAPES_COUNT-1];
+            bool[] isEndOfSeries = new bool[Configuration.TAPES_COUNT-1];
+            for(int i = 0; i < Configuration.TAPES_COUNT-1; i++)
+            {
+                records[i] = null;
+                isEndOfSeries[i] = false;
+            }
+            while (!isEndOfSeries.All(b => b == true))
+            {
+                for (int i = 0; i < Configuration.TAPES_COUNT-1; i++)
+                {
+                    if (records[i] is null && !isEndOfSeries[i])
+                    {
+                        records[i] = sources[i].GetRecord();
+                        if (records[i] is null)
+                        {
+                            isEndOfSeries[i] = true;
+                            sources[i].SeriesCount--;
+                        }
+                    }   
+                }
+                //find min and set to writting tape
+                var temp = records.ToList().Min(_comparer);
+                for (int i = 0; i < Configuration.TAPES_COUNT-1; i++)
+                {
+                    if (records[i] is not null && records[i].Equals(temp))
+                    {
+                        //Console.WriteLine($"Move to {destination.GetName()}:{records[i]}");
+                        destination.SetRecord(records[i]);
+                        if (sources[i].GetNextRecord() is null || sources[i].GetNextRecord().Index < records[i].Index)
+                        {
+                            isEndOfSeries[i] = true;
+                            sources[i].SeriesCount--;
+                        }
+                        records[i] = null;
+                    }
+                }
+            }
+            destination.SeriesCount++;
         }
     }
 }

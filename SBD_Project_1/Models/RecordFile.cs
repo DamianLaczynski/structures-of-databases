@@ -174,5 +174,14 @@ namespace SBD_Project_1.Models
             string result = $"File path: {Path}\nRead count: {ReadCount}\nWrite count: {WriteCount}\n";
             return result;
         }
+
+        public bool IsEmpty()
+        {
+            return GetLength() == 0;
+        }
+        public string GetName()
+        {
+            return Path.Split('\\').Last();
+        }
     }
 }
