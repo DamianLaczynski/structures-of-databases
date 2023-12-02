@@ -175,5 +175,14 @@ namespace SBD_Project_1
         {
             return _file.GetName();
         }
+
+        public long GetReadsCount()
+        {
+            return _file.ReadCount;
+        }
+        public long GetWritesCount()
+        {
+            return _file.WriteCount;
+        }
     }
 }

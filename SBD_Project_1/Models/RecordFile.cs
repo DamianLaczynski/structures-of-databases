@@ -9,8 +9,8 @@ namespace SBD_Project_1.Models
 {
     internal class RecordFile
     {
-        public int ReadCount { get; set; }
-        public int WriteCount { get; set; }
+        public long ReadCount { get; set; }
+        public long WriteCount { get; set; }
         private string Path { get; set; }
 
         private int _readPointer = 0;
@@ -54,9 +54,8 @@ namespace SBD_Project_1.Models
 
         public byte[] ReadBlock(int blockSize)
         {
-            ReadCount++;
-
             byte[] block;
+
             using (var stream = File.Open(Path, FileMode.Open))
             {
                 stream.Position = _readPointer;
@@ -67,8 +66,13 @@ namespace SBD_Project_1.Models
                         blockSize = (int)stream.Length - _readPointer;
                     }
                     block = new byte[blockSize];
-                    reader.Read(block, 0, blockSize);
-                    _readPointer += blockSize;
+                    if (blockSize > 0)
+                    {
+                        reader.Read(block, 0, blockSize);
+                        _readPointer += blockSize;
+
+                        ReadCount++;
+                    }
                 }
             }
 
@@ -77,13 +81,13 @@ namespace SBD_Project_1.Models
 
         public void WriteBlock(byte[] block)
         {
-            WriteCount++;
-
             using (var stream = File.Open(Path, FileMode.Append))
             {
                 using (var writer = new BinaryWriter(stream, Encoding.UTF8, false))
                 {
                     writer.Write(block);
+
+                    WriteCount++;
                 }
             }
         }
@@ -158,13 +162,13 @@ namespace SBD_Project_1.Models
         public void Print()
         {
             //print file info
-            Console.WriteLine(this.ToString());
+            Console.WriteLine(this.Path);
 
             //print all records in file
             int i = 1;
             foreach (var r in Read())
             {
-                Console.WriteLine($"{i}: {r}\n");
+                Console.WriteLine($"{i}: {r}");
                 i++;
             }
         }

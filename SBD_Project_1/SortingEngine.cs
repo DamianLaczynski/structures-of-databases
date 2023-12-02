@@ -1,6 +1,7 @@
 ﻿using SBD_Project_1.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
@@ -18,6 +19,8 @@ namespace SBD_Project_1
         private Tape[] _readingTapes;
         private MorePrimeNumbersFirstComparer _comparer = new MorePrimeNumbersFirstComparer();
 
+        private long _runsCount = 0;
+
         public SortingEngine(RecordFile file)
         {
             _file = file;
@@ -28,7 +31,7 @@ namespace SBD_Project_1
             //define sourse tape
             CreateTapes();
             Console.WriteLine("Start distributing");
-            Distribute();
+            _runsCount = Distribute();
             Console.WriteLine("End distributing");
         }
 
@@ -45,21 +48,39 @@ namespace SBD_Project_1
             _tapes.Add(_sourceTape);
         }
 
-        public RecordFile Sort()
+        public Results Sort()
         {
             Init();
+            Stopwatch stopwatch = new Stopwatch();
+            
             Console.WriteLine("Start sorting");
+            stopwatch.Start();
+            int phaseCounter = 0;
             while (_tapes.Select(t => t.SeriesCount + t.EmptySeriesCount).Sum() > 1)
             {
                 Step();
+                phaseCounter++;
             }
+            stopwatch.Stop();
             Console.WriteLine("End sorting");
+            Console.WriteLine($"Phases: {phaseCounter}");
             foreach (Tape t in _tapes)
             {
                 t.Close();
             }
-            var result = _tapes.Find(t => t.SeriesCount == 1);
-            return result.GetFile();
+            var outFile = _tapes.Find(t => t.SeriesCount == 1);
+
+            if (outFile is null)
+            {
+                throw new Exception("Out file not found");
+            }
+
+            return new Results(outFile.GetFile(), 
+                _tapes.Select(t => t.GetReadsCount()).Sum(), 
+                _tapes.Select(t => t.GetWritesCount()).Sum(), 
+                stopwatch.ElapsedMilliseconds,
+                phaseCounter, 
+                _runsCount);
         }
 
         void Step()
@@ -104,8 +125,9 @@ namespace SBD_Project_1
         //in _tapes last tape is source tape
 
 
-        private void Distribute()
-        {
+        private long Distribute()
+        {   
+            long runsCount = 0;
             Record[] lastOnTape = new Record[Configuration.TAPES_COUNT-1];
             for(int j = 0; j < Configuration.TAPES_COUNT-1; j++)
             {
@@ -124,9 +146,11 @@ namespace SBD_Project_1
                         _tapes[i%(Configuration.TAPES_COUNT-1)].SeriesCount--;
                     }
                     lastOnTape[i%(Configuration.TAPES_COUNT-1)] = SetSerie(_sourceTape, _tapes[i%(Configuration.TAPES_COUNT-1)]);
+                    runsCount++;
                 }
                 i++;
             }
+            return runsCount;
         }
 
         private Record SetSerie(Tape source, Tape destination)
