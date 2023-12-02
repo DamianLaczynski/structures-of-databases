@@ -10,8 +10,6 @@ namespace SBD_Project_1.Models
     {
         private int[] _numbers { get; set; } = new int[Configuration.MAX_RECORD_LENGTH];
 
-        public override int Index { get; set; } = 0;
-
         public NaturalNumbersSetRecord(int[] numbers)
         {
             if (numbers.Length > Configuration.MAX_RECORD_LENGTH)
@@ -50,8 +48,6 @@ namespace SBD_Project_1.Models
         {
             return _numbers;
         }
-
-        
 
         public override bool Equals(object? obj)
         {

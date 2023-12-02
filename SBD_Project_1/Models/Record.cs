@@ -8,9 +8,7 @@ namespace SBD_Project_1.Models
 {
     public class Record
     {
-        public virtual int MaxRecordLength { get; set; }
-
-        public virtual int Index { get; set; }
+        public int Index { get; set; }
 
         public Record() { }
 
