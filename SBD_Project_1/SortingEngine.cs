@@ -31,7 +31,7 @@ namespace SBD_Project_1
             //define sourse tape
             CreateTapes();
             Console.WriteLine("Start distributing");
-            _runsCount = Distribute();
+            _runsCount = FibonacciDistibution.Distribute(_sourceTape, _tapes);
             Console.WriteLine("End distributing");
         }
 
@@ -91,7 +91,7 @@ namespace SBD_Project_1
             {
                 if (_readingTapes.Any(t => t.EmptySeriesCount > 0))
                 {
-                    SetSerie(_readingTapes.ToList().Find(t => t.EmptySeriesCount == 0), _writtingTape);
+                    SeriesSetter.SetSerie(_readingTapes.ToList().Find(t => t.EmptySeriesCount == 0), _writtingTape);
                     _readingTapes.ToList().Find(t => t.EmptySeriesCount == 0).SeriesCount--;
                     _readingTapes.ToList().Find(t => t.EmptySeriesCount > 0).EmptySeriesCount--;
                 }
@@ -100,11 +100,6 @@ namespace SBD_Project_1
                     SetAndMerge(_readingTapes, _writtingTape);
                 }
             }
-        }
-
-        private int[] CalculateDistribution(int seriesCount)
-        {
-            return FibonacciSequenceGenerator.GenerateDistribution(Configuration.TAPES_COUNT-1, seriesCount);
         }
 
         private void changeTapesMode()
@@ -120,69 +115,6 @@ namespace SBD_Project_1
             _readingTapes = _tapes.FindAll(t => t != _writtingTape).ToArray();
             _readingTapes.ToList().ForEach(t => t.SetMode(TapeMode.Read));
             //Console.WriteLine($"Reading tapes: {string.Join(", ", _readingTapes.ToList())}");
-        }
-
-        //in _tapes last tape is source tape
-
-
-        private long Distribute()
-        {   
-            long runsCount = 0;
-            Record[] lastOnTape = new Record[Configuration.TAPES_COUNT-1];
-            for(int j = 0; j < Configuration.TAPES_COUNT-1; j++)
-            {
-                lastOnTape[j] = null;
-            }
-            int i = 0;
-            while (!_sourceTape.IsEmpty())
-            {
-                for (int j = 0; j < FibonacciSequenceGenerator.Get(i); j++)
-                {
-                    if (lastOnTape[i % (Configuration.TAPES_COUNT - 1)] is not null &&
-                        _sourceTape.GetNextRecord() is not null &&
-                        lastOnTape[i % (Configuration.TAPES_COUNT - 1)].Index < _sourceTape.GetNextRecord().Index)
-                    {
-                        lastOnTape[i%(Configuration.TAPES_COUNT-1)] = SetSerie(_sourceTape, _tapes[i%(Configuration.TAPES_COUNT-1)]);
-                        _tapes[i%(Configuration.TAPES_COUNT-1)].SeriesCount--;
-                    }
-                    lastOnTape[i%(Configuration.TAPES_COUNT-1)] = SetSerie(_sourceTape, _tapes[i%(Configuration.TAPES_COUNT-1)]);
-                    runsCount++;
-                }
-                i++;
-            }
-            return runsCount;
-        }
-
-        private Record SetSerie(Tape source, Tape destination)
-        {
-            Record last = null;
-            while (true)
-            {
-                Record record = source.GetRecord();
-                if (record is null)
-                {
-                    destination.EmptySeriesCount++;
-                    
-                    break;
-                }
-                last = record;
-                destination.SetRecord(record);
-                //Console.WriteLine($"Move to {destination.GetName()}:{record}");
-                Record nextRecord = source.GetNextRecord();
-                if (nextRecord is null)
-                {
-                    destination.SeriesCount++;
-                    
-                    break;
-                }
-                else if (record.Index > nextRecord.Index)
-                {
-                    destination.SeriesCount++;
-                    
-                    break;
-                }
-            }
-            return last;
         }
 
         private void SetAndMerge(Tape[] sources, Tape destination)
