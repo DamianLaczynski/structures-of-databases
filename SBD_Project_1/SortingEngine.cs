@@ -26,6 +26,9 @@ namespace SBD_Project_1
             _file = file;
         }
 
+        /// <summary>
+        /// Initializes tapes and get start distribution
+        /// </summary>
         private void Init()
         {
             //define sourse tape
@@ -35,6 +38,9 @@ namespace SBD_Project_1
             Console.WriteLine("End distributing");
         }
 
+        /// <summary>
+        /// Prepares tapes for sorting
+        /// </summary>
         private void CreateTapes()
         {
             //define sourse tape
@@ -48,6 +54,11 @@ namespace SBD_Project_1
             _tapes.Add(_sourceTape);
         }
 
+        /// <summary>
+        /// Sorts file by polifase method
+        /// </summary>
+        /// <returns>Results of sorting</returns>
+        /// <exception cref="Exception"></exception>
         public Results Sort()
         {
             Init();
@@ -83,9 +94,12 @@ namespace SBD_Project_1
                 _runsCount);
         }
 
+        /// <summary>
+        /// One phase of sorting
+        /// </summary>
         void Step()
         {
-            changeTapesMode();
+            ChangeTapesMode();
 
             while (!_readingTapes.Any(t => t.SeriesCount == 0))
             {
@@ -97,12 +111,15 @@ namespace SBD_Project_1
                 }
                 else
                 {
-                    SetAndMerge(_readingTapes, _writtingTape);
+                    SeriesSetter.SetAndMerge(_readingTapes, _writtingTape, _comparer);
                 }
             }
         }
 
-        private void changeTapesMode()
+        /// <summary>
+        /// Prepares tapes for next phase
+        /// </summary>
+        private void ChangeTapesMode()
         {
             //preapare tape for writting
             //find tape that is empty and before was in read mode
@@ -117,47 +134,6 @@ namespace SBD_Project_1
             //Console.WriteLine($"Reading tapes: {string.Join(", ", _readingTapes.ToList())}");
         }
 
-        private void SetAndMerge(Tape[] sources, Tape destination)
-        {
-            Record[] records = new Record[Configuration.TAPES_COUNT-1];
-            bool[] isEndOfSeries = new bool[Configuration.TAPES_COUNT-1];
-            for(int i = 0; i < Configuration.TAPES_COUNT-1; i++)
-            {
-                records[i] = null;
-                isEndOfSeries[i] = false;
-            }
-            while (!isEndOfSeries.All(b => b == true))
-            {
-                for (int i = 0; i < Configuration.TAPES_COUNT-1; i++)
-                {
-                    if (records[i] is null && !isEndOfSeries[i])
-                    {
-                        records[i] = sources[i].GetRecord();
-                        if (records[i] is null)
-                        {
-                            isEndOfSeries[i] = true;
-                            sources[i].SeriesCount--;
-                        }
-                    }   
-                }
-                //find min and set to writting tape
-                var temp = records.ToList().Min(_comparer);
-                for (int i = 0; i < Configuration.TAPES_COUNT-1; i++)
-                {
-                    if (records[i] is not null && records[i].Equals(temp))
-                    {
-                        //Console.WriteLine($"Move to {destination.GetName()}:{records[i]}");
-                        destination.SetRecord(records[i]);
-                        if (sources[i].GetNextRecord() is null || sources[i].GetNextRecord().Index < records[i].Index)
-                        {
-                            isEndOfSeries[i] = true;
-                            sources[i].SeriesCount--;
-                        }
-                        records[i] = null;
-                    }
-                }
-            }
-            destination.SeriesCount++;
-        }
+        
     }
 }
