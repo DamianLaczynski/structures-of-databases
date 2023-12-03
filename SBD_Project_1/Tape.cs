@@ -120,6 +120,10 @@ namespace SBD_Project_1
                 _queue.Clear();
             }
         }
+        public void Delete()
+        {
+            _file.Delete();
+        }
 
         public TapeMode GetMode() { return _mode; }
 

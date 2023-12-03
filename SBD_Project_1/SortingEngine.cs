@@ -65,6 +65,7 @@ namespace SBD_Project_1
             Stopwatch stopwatch = new Stopwatch();
             
             Console.WriteLine("Start sorting");
+            var runs = _tapes.Select(t => t.SeriesCount + t.EmptySeriesCount).Sum();
             stopwatch.Start();
             int phaseCounter = 0;
             while (_tapes.Select(t => t.SeriesCount + t.EmptySeriesCount).Sum() > 1)
@@ -79,19 +80,38 @@ namespace SBD_Project_1
             {
                 t.Close();
             }
-            var outFile = _tapes.Find(t => t.SeriesCount == 1);
+
+            var outTape = _tapes.Find(t => t.SeriesCount == 1);
+            string destinationFileName = "result.bin";
+
+            try
+            {
+                File.Copy(outTape.GetFile().GetPath(), destinationFileName, true);
+                Console.WriteLine($"Plik {outTape.GetFile().GetPath()} został skopiowany do {destinationFileName}.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Wystąpił błąd: {ex.Message}");
+            }
+
+            RecordFile outFile = new RecordFile(destinationFileName, FileMode.OpenOrCreate);
 
             if (outFile is null)
             {
                 throw new Exception("Out file not found");
             }
 
-            return new Results(outFile.GetFile(), 
+            return new Results(outFile, 
                 _tapes.Select(t => t.GetReadsCount()).Sum(), 
                 _tapes.Select(t => t.GetWritesCount()).Sum(), 
                 stopwatch.ElapsedMilliseconds,
                 phaseCounter, 
-                _runsCount);
+                runs);
+        }
+
+        public void Clear()
+        {
+            _tapes.ToList().ForEach(_tapes => _tapes.Delete());
         }
 
         /// <summary>

@@ -237,5 +237,14 @@ namespace SBD_Project_1.Models
         {
             return Path.Split('\\').Last();
         }
+
+        public void Delete()
+        {
+            File.Delete(Path);
+        }
+        public string GetPath()
+        {
+            return Path;
+        }
     }
 }
