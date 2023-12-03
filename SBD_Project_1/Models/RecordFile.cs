@@ -100,6 +100,10 @@ namespace SBD_Project_1.Models
         /// <param name="block">Block of bytes</param>
         public void WriteBlock(byte[] block)
         {
+            if(block.Length == 0)
+            {
+                return;
+            }
             using (var stream = File.Open(Path, FileMode.Append))
             {
                 using (var writer = new BinaryWriter(stream, Encoding.UTF8, false))

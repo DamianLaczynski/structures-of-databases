@@ -54,6 +54,7 @@ namespace SBD_Project_1
             Console.WriteLine($"Runs: {_runs}");
             Console.WriteLine($"Disk access: {_writes+_reads}");
             Console.WriteLine($"Time: {_totalTime} milliseconds");
+            Console.ReadKey();
 
             //write file content
             _file.Print();

@@ -26,7 +26,11 @@ namespace SBD_Project_1.Generation
                 Console.WriteLine("Enter record elements separated by space");
                 string input = Console.ReadLine();
                 inputArray = input.Split(' ');
-                numbers = new int[inputArray.Length];
+                numbers = new int[Configuration.MAX_RECORD_LENGTH];
+                for(int i = 0; i < Configuration.MAX_RECORD_LENGTH; i++)
+                {
+                    numbers[i] = 0;
+                }
                 if (inputArray.Length > Configuration.MAX_RECORD_LENGTH)
                 {
                     Console.WriteLine($"Record can't have more than {Configuration.MAX_RECORD_LENGTH} elements");

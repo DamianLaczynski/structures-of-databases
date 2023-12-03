@@ -35,6 +35,7 @@ namespace SBD_Project_1
                     {
                         lastOnTape[i%(Configuration.TAPES_COUNT-1)] = SeriesSetter.SetSerie(source, destinations[i%(Configuration.TAPES_COUNT-1)]);
                         destinations[i%(Configuration.TAPES_COUNT-1)].SeriesCount--;
+                        runsCount--;
                     }
                     lastOnTape[i%(Configuration.TAPES_COUNT-1)] = SeriesSetter.SetSerie(source, destinations[i%(Configuration.TAPES_COUNT-1)]);
                     runsCount++;
