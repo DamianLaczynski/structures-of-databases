@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace SBD_Project_1
 {
+    /// <summary>
+    /// Compares records by index
+    /// Sorts in ascending order
+    /// </summary>
     internal class MorePrimeNumbersFirstComparer : IComparer<Record>
     {
 

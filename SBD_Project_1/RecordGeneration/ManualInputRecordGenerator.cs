@@ -7,9 +7,15 @@ using SBD_Project_1.Models;
 
 namespace SBD_Project_1.Generation
 {
+    /// <summary>
+    /// Class for generating records from user input
+    /// </summary>
     internal class ManualInputRecordGenerator : RecordGenerator
     {
-        //gets record from user input
+        /// <summary>
+        /// Gets record from user input
+        /// </summary>
+        /// <returns></returns>
         public override NaturalNumbersSetRecord GetRecord()
         {
             int[] numbers;
@@ -44,6 +50,11 @@ namespace SBD_Project_1.Generation
             return new NaturalNumbersSetRecord(numbers);
         }
 
+        /// <summary>
+        /// Gets list of records from user input
+        /// </summary>
+        /// <param name="count">Number of records</param>
+        /// <returns>List of taken records </returns>
         public override List<Record> GetRecords(int count)
         {
             List<Record> records = new List<Record>();

@@ -10,7 +10,11 @@ namespace SBD_Project_1
 {
     public static class FibonacciSequenceGenerator
     {
-        //generates sequence of n fibonacci numbers
+        /// <summary>
+        /// Generates sequence of n fibonacci numbers
+        /// </summary>
+        /// <param name="n">Length of sequence</param>
+        /// <returns>Sequence of fibomacci numbers</returns>
         public static int[] Generate(int n)
         {
             int[] sequence = new int[n];
@@ -23,7 +27,11 @@ namespace SBD_Project_1
             return sequence;
         }
 
-        //generates n-th fibonacci number
+        /// <summary>
+        /// Generates n-th fibonacci number
+        /// </summary>
+        /// <param name="n">Index of number in fibonacci sequence</param>
+        /// <returns>Fibonacci number</returns>
         public static long Get(int n)
         {
             if (n == 0 || n == 1)
@@ -40,7 +48,12 @@ namespace SBD_Project_1
             return b;
         }
 
-        //generates part of sequence of n fibonacci numbers that sum is greater or equal m
+        /// <summary>
+        /// Generates part of sequence of n fibonacci numbers that sum is greater or equal m
+        /// </summary>
+        /// <param name="n">Length of sequence</param>
+        /// <param name="m">Minimum sum of numbers in sequence</param>
+        /// <returns>Sequence of n fibonacci numbers that sum is greater or equal m</returns>
         public static int[] GenerateDistribution(int n, int m)
         {
             Queue<int> sequence = new Queue<int>();

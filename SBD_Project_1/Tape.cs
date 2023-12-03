@@ -178,11 +178,11 @@ namespace SBD_Project_1
 
         public long GetReadsCount()
         {
-            return _file.ReadCount;
+            return _file.Reads;
         }
         public long GetWritesCount()
         {
-            return _file.WriteCount;
+            return _file.Writes;
         }
     }
 }

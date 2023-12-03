@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace SBD_Project_1
 {
+    /// <summary>
+    /// Contains results of sorting
+    /// </summary>
     internal class Results
     {
         RecordFile _file;
@@ -16,12 +19,12 @@ namespace SBD_Project_1
         long _phases;
         long _runs;
 
-        public Results(RecordFile file, long readsCount, long writesCount, long phaseCount, long runs)
+        public Results(RecordFile file, long reads, long writes, long phases, long runs)
         {
             _file = file;
-            _reads = readsCount;
-            _writes = writesCount;
-            _phases=phaseCount;
+            _reads = reads;
+            _writes = writes;
+            _phases=phases;
             _runs = runs;
         }
 
