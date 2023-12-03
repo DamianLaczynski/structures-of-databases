@@ -38,5 +38,15 @@ namespace SBD_Project_1.RecordGeneration
             }
 
         }
+        /// <summary>
+        /// Generates records from user input and writes them to file
+        /// </summary>
+        /// <param name="recordsCout">Number of records</param>
+        public void EnterRecords(int recordsCout)
+        {
+            RecordGenerator recordGenerator = new ManualInputRecordGenerator();
+            var records = recordGenerator.GetRecords(recordsCout);
+            _file.Write(records);
+        }
     }
 }

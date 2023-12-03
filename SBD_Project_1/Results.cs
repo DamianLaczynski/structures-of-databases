@@ -45,7 +45,7 @@ namespace SBD_Project_1
             Console.ResetColor();
 
             //write statistics
-            Console.WriteLine($"Records: {Configuration.RECORDS_COUNT}");
+            Console.WriteLine($"Records: {_file.GetLength()/(Configuration.MAX_RECORD_LENGTH*sizeof(int)) }");
             Console.WriteLine($"Tapes: {Configuration.TAPES_COUNT}");
             Console.WriteLine($"Buffer Size: {Configuration.BUFFER_SIZE}");
             Console.WriteLine($"Reads: {_reads}");
