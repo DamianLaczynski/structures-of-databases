@@ -9,6 +9,11 @@ namespace SBD_Project_1.Models
 {
     public static class ArrayConverter
     {
+        /// <summary>
+        /// Converts int array to byte array
+        /// </summary>
+        /// <param name="intArray"></param>
+        /// <returns></returns>
         public static byte[] ToByteArray(int[] intArray)
         {
             byte[] byteArray = new byte[intArray.Length * sizeof(int)];
@@ -21,6 +26,11 @@ namespace SBD_Project_1.Models
 
             return byteArray;
         }
+        /// <summary>
+        /// Converts queue of records to byte array
+        /// </summary>
+        /// <param name="queue"></param>
+        /// <returns></returns>
         public static byte[] ToByteArray(Queue<Record> queue)
         {
             byte[] byteArray = new byte[queue.Count * 15 * sizeof(int)];
@@ -34,6 +44,11 @@ namespace SBD_Project_1.Models
             return byteArray;
         }
 
+        /// <summary>
+        /// Converts byte array to int array
+        /// </summary>
+        /// <param name="byteArray"></param>
+        /// <returns></returns>
         public static int[] ToIntArray(byte[] byteArray)
         {
             int[] intArray = new int[byteArray.Length / sizeof(int)];
@@ -45,6 +60,11 @@ namespace SBD_Project_1.Models
             return intArray;
         }
 
+        /// <summary>
+        /// Converts byte array to queue of records
+        /// </summary>
+        /// <param name="byteArray"></param>
+        /// <returns></returns>
         public static Queue<Record> ToRecordQueue(byte[] byteArray)
         {
             Queue<Record> recordQueue = new Queue<Record>();
@@ -62,6 +82,12 @@ namespace SBD_Project_1.Models
             }
             return recordQueue;
         }
+
+        /// <summary>
+        /// Converts byte array to list of records
+        /// </summary>
+        /// <param name="byteArray"></param>
+        /// <returns></returns>
         public static List<Record> ToRecordList(byte[] byteArray)
         {
             List<Record> recordList = new List<Record>();

@@ -5,8 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SBD_Project_1
+namespace SBD_Project_1.PoliphaseSort
 {
+    /// <summary>
+    /// Compares records by index
+    /// Sorts in ascending order
+    /// </summary>
     internal class MorePrimeNumbersFirstComparer : IComparer<Record>
     {
 

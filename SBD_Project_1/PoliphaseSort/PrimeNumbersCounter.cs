@@ -4,10 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SBD_Project_1
+namespace SBD_Project_1.PoliphaseSort
 {
     public static class PrimeNumbersCounter
     {
+        /// <summary>
+        /// Counts prime numbers in table
+        /// </summary>
+        /// <param name="table">Table of numbers</param>
+        /// <returns>Number of primes in table</returns>
         public static int Count(int[] table)
         {
             int counter = 0;
@@ -20,6 +25,12 @@ namespace SBD_Project_1
             }
             return counter;
         }
+
+        /// <summary>
+        /// Checks if number is prime
+        /// </summary>
+        /// <param name="number">Number to check</param>
+        /// <returns>True if number is prime</returns>
         public static bool IsPrime(int number)
         {
             if (number <= 1) return false;

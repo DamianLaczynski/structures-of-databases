@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace SBD_Project_1.RecordGeneration
 {
+    /// <summary>
+    /// Class for generating records and writing them to file
+    /// </summary>
     internal class RecordFilesGenerator
     {
         private readonly RecordFile _file;
@@ -16,6 +19,11 @@ namespace SBD_Project_1.RecordGeneration
         {
             _file = file;
         }
+        /// <summary>
+        /// Generates records and writes them to file
+        /// </summary>
+        /// <param name="recordsCout"></param>
+        /// <exception cref="NullReferenceException"></exception>
         public void Generate(int recordsCout)
         {
             if (_file != null)
@@ -29,6 +37,16 @@ namespace SBD_Project_1.RecordGeneration
                 throw new NullReferenceException("File is null");
             }
 
+        }
+        /// <summary>
+        /// Generates records from user input and writes them to file
+        /// </summary>
+        /// <param name="recordsCout">Number of records</param>
+        public void EnterRecords(int recordsCout)
+        {
+            RecordGenerator recordGenerator = new ManualInputRecordGenerator();
+            var records = recordGenerator.GetRecords(recordsCout);
+            _file.Write(records);
         }
     }
 }

@@ -7,10 +7,17 @@ using SBD_Project_1.Models;
 
 namespace SBD_Project_1.Generation
 {
+    /// <summary>
+    /// Class for generating records from random numbers
+    /// </summary>
     internal class RandomRecordGenerator : RecordGenerator
     {
         private readonly Random _random = new Random();
 
+        /// <summary>
+        /// Generates record with random numbers
+        /// </summary>
+        /// <returns>Random record</returns>
         public override NaturalNumbersSetRecord GetRecord()
         {
             int[] numbers = new int[Configuration.MAX_RECORD_LENGTH];
@@ -25,6 +32,11 @@ namespace SBD_Project_1.Generation
             return new NaturalNumbersSetRecord(numbers);
         }
 
+        /// <summary>
+        /// Generates list of records with random numbers
+        /// </summary>
+        /// <param name="count">Number of records to generate</param>
+        /// <returns>List of random records</returns>
         public override List<Record> GetRecords(int count)
         {
             List<Record> records = new List<Record>();

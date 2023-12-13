@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SBD_Project_1.PoliphaseSort;
 
 namespace SBD_Project_1.Models
 {
     internal class NaturalNumbersSetRecord : Record
     {
         private int[] _numbers { get; set; } = new int[Configuration.MAX_RECORD_LENGTH];
-
-        public override int Index { get; set; } = 0;
 
         public NaturalNumbersSetRecord(int[] numbers)
         {
@@ -50,8 +49,6 @@ namespace SBD_Project_1.Models
         {
             return _numbers;
         }
-
-        
 
         public override bool Equals(object? obj)
         {

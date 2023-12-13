@@ -7,9 +7,15 @@ using SBD_Project_1.Models;
 
 namespace SBD_Project_1.Generation
 {
+    /// <summary>
+    /// Class for generating records from user input
+    /// </summary>
     internal class ManualInputRecordGenerator : RecordGenerator
     {
-        //gets record from user input
+        /// <summary>
+        /// Gets record from user input
+        /// </summary>
+        /// <returns></returns>
         public override NaturalNumbersSetRecord GetRecord()
         {
             int[] numbers;
@@ -20,7 +26,11 @@ namespace SBD_Project_1.Generation
                 Console.WriteLine("Enter record elements separated by space");
                 string input = Console.ReadLine();
                 inputArray = input.Split(' ');
-                numbers = new int[inputArray.Length];
+                numbers = new int[Configuration.MAX_RECORD_LENGTH];
+                for(int i = 0; i < Configuration.MAX_RECORD_LENGTH; i++)
+                {
+                    numbers[i] = 0;
+                }
                 if (inputArray.Length > Configuration.MAX_RECORD_LENGTH)
                 {
                     Console.WriteLine($"Record can't have more than {Configuration.MAX_RECORD_LENGTH} elements");
@@ -44,6 +54,11 @@ namespace SBD_Project_1.Generation
             return new NaturalNumbersSetRecord(numbers);
         }
 
+        /// <summary>
+        /// Gets list of records from user input
+        /// </summary>
+        /// <param name="count">Number of records</param>
+        /// <returns>List of taken records </returns>
         public override List<Record> GetRecords(int count)
         {
             List<Record> records = new List<Record>();
