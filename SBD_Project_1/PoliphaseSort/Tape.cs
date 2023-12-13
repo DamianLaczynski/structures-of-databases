@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
 
-namespace SBD_Project_1
+namespace SBD_Project_1.PoliphaseSort
 {
     public enum TapeMode
     {
@@ -28,7 +28,7 @@ namespace SBD_Project_1
         private RecordFile _file;
 
         public long SeriesCount { get; set; }
-        public long EmptySeriesCount {  get; set; }
+        public long EmptySeriesCount { get; set; }
 
         public Tape(TapeMode mode)
         {
@@ -63,7 +63,7 @@ namespace SBD_Project_1
                 throw new Exception("Mode: READ. You cannot read now.");
             }
             TryRefillBuffer();
-            if(_queue.Count == 0)
+            if (_queue.Count == 0)
             {
                 return null;
             }
@@ -71,42 +71,42 @@ namespace SBD_Project_1
         }
         public void SetRecord(Record record)
         {
-            if(_mode == TapeMode.Read)
+            if (_mode == TapeMode.Read)
             {
                 throw new Exception("Mode: READ. You cannot write now.");
             }
-            this._queue.Enqueue(record);
+            _queue.Enqueue(record);
             if (_queue.Count == Configuration.MAX_RECORDS_IN_BUFFER)
             {
-                _file.WriteBlock(ArrayConverter.ToByteArray(this._queue));
+                _file.WriteBlock(ArrayConverter.ToByteArray(_queue));
                 _queue.Clear();
             }
         }
 
         public void SetMode(TapeMode mode)
         {
-            if(_queue.Count == 0)
+            if (_queue.Count == 0)
             {
-                
-                if(mode == TapeMode.Read && this._mode != TapeMode.Read)
+
+                if (mode == TapeMode.Read && _mode != TapeMode.Read)
                 {
                     _file.SetReadPointer(0);
                 }
-                else if(mode == TapeMode.Write)
+                else if (mode == TapeMode.Write)
                 {
                     _file.OverrideFile();
                 }
-                this._mode = mode;
+                _mode = mode;
             }
             else
             {
-                if(this._mode == TapeMode.Read && mode == TapeMode.Write)
+                if (_mode == TapeMode.Read && mode == TapeMode.Write)
                 {
                     throw new Exception("There is any content; Mode: READ");
                 }
-                else if(this._mode == TapeMode.Write)
+                else if (_mode == TapeMode.Write)
                 {
-                    _file.WriteBlock(ArrayConverter.ToByteArray(this._queue));
+                    _file.WriteBlock(ArrayConverter.ToByteArray(_queue));
                     _queue.Clear();
                     SetMode(mode);
                 }
@@ -114,9 +114,9 @@ namespace SBD_Project_1
         }
         public void Close()
         {
-            if(_mode == TapeMode.Write)
+            if (_mode == TapeMode.Write)
             {
-                _file.WriteBlock(ArrayConverter.ToByteArray(this._queue));
+                _file.WriteBlock(ArrayConverter.ToByteArray(_queue));
                 _queue.Clear();
             }
         }
@@ -139,13 +139,13 @@ namespace SBD_Project_1
 
         public override string? ToString()
         {
-            return _file.ToString() + $"SeriesCount:{this.SeriesCount}\nEmptySeriesCount:{this.EmptySeriesCount}\n";
+            return _file.ToString() + $"SeriesCount:{SeriesCount}\nEmptySeriesCount:{EmptySeriesCount}\n";
         }
 
         public bool IsEmpty()
         {
             TryRefillBuffer();
-            if(_queue.Count == 0)
+            if (_queue.Count == 0)
             {
                 return true;
             }
@@ -157,7 +157,7 @@ namespace SBD_Project_1
 
         private void TryRefillBuffer()
         {
-            if(_queue.Count == 0)
+            if (_queue.Count == 0)
             {
                 byte[] temp = _file.ReadBlock(Configuration.BUFFER_SIZE);
                 _queue = ArrayConverter.ToRecordQueue(temp);
@@ -172,7 +172,7 @@ namespace SBD_Project_1
 
         public void Print()
         {
-            Console.WriteLine(this.GetName() + " Buffer:");
+            Console.WriteLine(GetName() + " Buffer:");
             _queue.ToList().ForEach(r => Console.WriteLine(r));
             _file.Print();
         }

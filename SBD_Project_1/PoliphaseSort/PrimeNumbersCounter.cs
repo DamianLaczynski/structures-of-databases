@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SBD_Project_1
+namespace SBD_Project_1.PoliphaseSort
 {
     public static class PrimeNumbersCounter
     {

@@ -7,7 +7,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SBD_Project_1
+namespace SBD_Project_1.PoliphaseSort
 {
     internal class SortingEngine
     {
@@ -47,7 +47,7 @@ namespace SBD_Project_1
             _sourceTape = new Tape(_file);
             //define tapes for distribution
             _tapes = new List<Tape>(Configuration.TAPES_COUNT);
-            for (int i = 0; i < Configuration.TAPES_COUNT-1; i++)
+            for (int i = 0; i < Configuration.TAPES_COUNT - 1; i++)
             {
                 _tapes.Add(new Tape(TapeMode.Write));
             }
@@ -63,7 +63,7 @@ namespace SBD_Project_1
         {
             Init();
             Stopwatch stopwatch = new Stopwatch();
-            
+
             Console.WriteLine("Start sorting");
             var runs = _tapes.Select(t => t.SeriesCount + t.EmptySeriesCount).Sum();
             stopwatch.Start();
@@ -101,11 +101,11 @@ namespace SBD_Project_1
                 throw new Exception("Out file not found");
             }
 
-            return new Results(outFile, 
-                _tapes.Select(t => t.GetReadsCount()).Sum(), 
-                _tapes.Select(t => t.GetWritesCount()).Sum(), 
+            return new Results(outFile,
+                _tapes.Select(t => t.GetReadsCount()).Sum(),
+                _tapes.Select(t => t.GetWritesCount()).Sum(),
                 stopwatch.ElapsedMilliseconds,
-                phaseCounter, 
+                phaseCounter,
                 runs);
         }
 
@@ -155,9 +155,9 @@ namespace SBD_Project_1
             Console.WriteLine($"Reading tapes:");
             _readingTapes.ToList().ForEach(t => { t.Print(); });
             Console.WriteLine();
-             Console.ReadKey();
+            Console.ReadKey();
         }
 
-        
+
     }
 }

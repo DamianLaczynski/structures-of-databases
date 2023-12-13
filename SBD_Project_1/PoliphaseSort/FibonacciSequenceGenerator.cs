@@ -6,7 +6,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SBD_Project_1
+namespace SBD_Project_1.PoliphaseSort
 {
     public static class FibonacciSequenceGenerator
     {
@@ -59,15 +59,15 @@ namespace SBD_Project_1
             Queue<int> sequence = new Queue<int>();
             sequence.Enqueue(1);
             sequence.Enqueue(1);
-            while(true)
+            while (true)
             {
-                if(sequence.Count < n)
+                if (sequence.Count < n)
                 {
                     sequence.Enqueue(sequence.TakeLast(2).Sum());
                 }
                 else
                 {
-                    if(sequence.Sum() >= m)
+                    if (sequence.Sum() >= m)
                         return sequence.ToArray();
                     else
                     {

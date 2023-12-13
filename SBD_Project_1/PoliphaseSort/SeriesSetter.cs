@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SBD_Project_1
+namespace SBD_Project_1.PoliphaseSort
 {
     internal static class SeriesSetter
     {
@@ -54,16 +54,16 @@ namespace SBD_Project_1
         /// <param name="destination">Destination tape</param>
         public static void SetAndMerge(Tape[] sources, Tape destination, IComparer<Record> comparer)
         {
-            Record[] records = new Record[Configuration.TAPES_COUNT-1];
-            bool[] isEndOfSeries = new bool[Configuration.TAPES_COUNT-1];
-            for (int i = 0; i < Configuration.TAPES_COUNT-1; i++)
+            Record[] records = new Record[Configuration.TAPES_COUNT - 1];
+            bool[] isEndOfSeries = new bool[Configuration.TAPES_COUNT - 1];
+            for (int i = 0; i < Configuration.TAPES_COUNT - 1; i++)
             {
                 records[i] = null;
                 isEndOfSeries[i] = false;
             }
             while (!isEndOfSeries.All(b => b == true))
             {
-                for (int i = 0; i < Configuration.TAPES_COUNT-1; i++)
+                for (int i = 0; i < Configuration.TAPES_COUNT - 1; i++)
                 {
                     if (records[i] is null && !isEndOfSeries[i])
                     {
@@ -77,7 +77,7 @@ namespace SBD_Project_1
                 }
                 //find min and set to writting tape
                 var temp = records.ToList().Min(comparer);
-                for (int i = 0; i < Configuration.TAPES_COUNT-1; i++)
+                for (int i = 0; i < Configuration.TAPES_COUNT - 1; i++)
                 {
                     if (records[i] is not null && records[i].Equals(temp))
                     {

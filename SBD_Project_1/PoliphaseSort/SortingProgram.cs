@@ -1,13 +1,12 @@
 ﻿using SBD_Project_1.Models;
 using SBD_Project_1.RecordGeneration;
-using SBD_Project_1;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SBD_Project_1
+namespace SBD_Project_1.PoliphaseSort
 {
     internal class SortingProgram
     {

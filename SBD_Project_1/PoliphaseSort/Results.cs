@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SBD_Project_1
+namespace SBD_Project_1.PoliphaseSort
 {
     /// <summary>
     /// Contains results of sorting
@@ -24,7 +24,7 @@ namespace SBD_Project_1
             _file = file;
             _reads = reads;
             _writes = writes;
-            _phases=phases;
+            _phases = phases;
             _runs = runs;
         }
 
@@ -33,8 +33,8 @@ namespace SBD_Project_1
             _file = file;
             _reads = reads;
             _writes = writes;
-            _totalTime=totalTime;
-            _phases=phases;
+            _totalTime = totalTime;
+            _phases = phases;
             _runs = runs;
         }
 
@@ -45,14 +45,14 @@ namespace SBD_Project_1
             Console.ResetColor();
 
             //write statistics
-            Console.WriteLine($"Records: {_file.GetLength()/(Configuration.MAX_RECORD_LENGTH*sizeof(int)) }");
+            Console.WriteLine($"Records: {_file.GetLength() / (Configuration.MAX_RECORD_LENGTH * sizeof(int))}");
             Console.WriteLine($"Tapes: {Configuration.TAPES_COUNT}");
             Console.WriteLine($"Buffer Size: {Configuration.BUFFER_SIZE}");
             Console.WriteLine($"Reads: {_reads}");
             Console.WriteLine($"Writes: {_writes}");
             Console.WriteLine($"Phases: {_phases}");
             Console.WriteLine($"Runs: {_runs}");
-            Console.WriteLine($"Disk access: {_writes+_reads}");
+            Console.WriteLine($"Disk access: {_writes + _reads}");
             Console.WriteLine($"Time: {_totalTime} milliseconds");
             Console.ReadKey();
 

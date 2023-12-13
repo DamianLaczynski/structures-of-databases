@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SBD_Project_1
+namespace SBD_Project_1.PoliphaseSort
 {
     internal class FibonacciDistibution
     {
@@ -18,8 +18,8 @@ namespace SBD_Project_1
         public static long Distribute(Tape source, List<Tape> destinations)
         {
             long runsCount = 0;
-            Record[] lastOnTape = new Record[Configuration.TAPES_COUNT-1];
-            for (int j = 0; j < Configuration.TAPES_COUNT-1; j++)
+            Record[] lastOnTape = new Record[Configuration.TAPES_COUNT - 1];
+            for (int j = 0; j < Configuration.TAPES_COUNT - 1; j++)
             {
                 lastOnTape[j] = null;
             }
@@ -33,11 +33,11 @@ namespace SBD_Project_1
                         source.GetNextRecord() is not null &&
                         lastOnTape[i % (Configuration.TAPES_COUNT - 1)].Index < source.GetNextRecord().Index)
                     {
-                        lastOnTape[i%(Configuration.TAPES_COUNT-1)] = SeriesSetter.SetSerie(source, destinations[i%(Configuration.TAPES_COUNT-1)]);
-                        destinations[i%(Configuration.TAPES_COUNT-1)].SeriesCount--;
+                        lastOnTape[i % (Configuration.TAPES_COUNT - 1)] = SeriesSetter.SetSerie(source, destinations[i % (Configuration.TAPES_COUNT - 1)]);
+                        destinations[i % (Configuration.TAPES_COUNT - 1)].SeriesCount--;
                         runsCount--;
                     }
-                    lastOnTape[i%(Configuration.TAPES_COUNT-1)] = SeriesSetter.SetSerie(source, destinations[i%(Configuration.TAPES_COUNT-1)]);
+                    lastOnTape[i % (Configuration.TAPES_COUNT - 1)] = SeriesSetter.SetSerie(source, destinations[i % (Configuration.TAPES_COUNT - 1)]);
                     runsCount++;
                 }
                 i++;
