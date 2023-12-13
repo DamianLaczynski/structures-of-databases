@@ -170,6 +170,13 @@ namespace SBD_Project_1
             return _file;
         }
 
+        public void Print()
+        {
+            Console.WriteLine(this.GetName() + " Buffer:");
+            _queue.ToList().ForEach(r => Console.WriteLine(r));
+            _file.Print();
+        }
+
         private RecordFile CreateFile()
         {
             var path = "tape" + _tapeNumber + ".bin";

@@ -145,13 +145,17 @@ namespace SBD_Project_1
             //find tape that is empty and before was in read mode
             _writtingTape = _tapes.Find(t => t.GetMode() == TapeMode.Read && t.IsEmpty());
             _writtingTape.SetMode(TapeMode.Write);
-            //Console.WriteLine($"Writting tape: {_writtingTape}");
+            Console.WriteLine($"Writting tape:");
+            _writtingTape.Print();
 
             //preapare tapes for reading
             //find tapes that are not writting tape and set mode to read
             _readingTapes = _tapes.FindAll(t => t != _writtingTape).ToArray();
             _readingTapes.ToList().ForEach(t => t.SetMode(TapeMode.Read));
-            //Console.WriteLine($"Reading tapes: {string.Join(", ", _readingTapes.ToList())}");
+            Console.WriteLine($"Reading tapes:");
+            _readingTapes.ToList().ForEach(t => { t.Print(); });
+            Console.WriteLine();
+             Console.ReadKey();
         }
 
         
