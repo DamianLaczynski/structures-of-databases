@@ -77,7 +77,7 @@ namespace SBD_Project_1
         {
             if(pageNo < 0)
             {
-                //klucz jest mineijsczy od najmniejszego klucza w pliku
+                throw new Exception("Page number cannot be negative. Invalid Page number");
             }
             LoadPage(pageNo);
 
@@ -90,10 +90,12 @@ namespace SBD_Project_1
             //add record to page if there is space
             if (_records.Count < _primaryAreaRecordsCount)
             {
+                //add record to the end of the list if it is the biggest key
                 if ((_records.Last is not null && _records.Last.Value.Key < record.Key) || _records.Count == 0)
                 {
                     _records.AddLast(record);
                 }
+                //add record before the first bigger key
                 else
                 {
                     var node = _records.First;
@@ -112,6 +114,7 @@ namespace SBD_Project_1
                 RecordsCount++;
                 return 0;
             }
+            //no space on page
             else
             {
                 var beforeNewRecord = _records.Where(x => x.Key < record.Key).Last();
@@ -161,7 +164,7 @@ namespace SBD_Project_1
             }
             else
             {
-                record.Key = 0;
+                record.MarkAsDeleted();
                 RecordsCount--;
             }
             SavePage(pageNo);

@@ -43,6 +43,7 @@ namespace SBD_Project_1
             catch(Exception e)
             {
                 Console.WriteLine(e.Message);
+                result.Type = ResultType.Failure;
             }
             finally
             {
