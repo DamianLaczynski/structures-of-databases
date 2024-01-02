@@ -56,6 +56,10 @@ namespace SBD_Project_1.Models
             }
             return content;
         }
+        public override void MarkAsDeleted()
+        {
+            _data = new NaturalNumbersSetRecord(new int[] { -1 });
+        }
 
         public override bool Equals(object? obj)
         {

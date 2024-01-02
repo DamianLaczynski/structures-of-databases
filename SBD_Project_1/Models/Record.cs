@@ -26,5 +26,10 @@ namespace SBD_Project_1.Models
             throw new NotImplementedException();
         }
 
+        public virtual void MarkAsDeleted()
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

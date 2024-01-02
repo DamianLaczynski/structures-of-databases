@@ -160,7 +160,7 @@ namespace SBD_Project_1.Models
                 record[i % (Configuration.MAX_RECORD_LENGTH + 2)] = intArray[i];
                 if (i % (Configuration.MAX_RECORD_LENGTH + 2) == (Configuration.MAX_RECORD_LENGTH + 1))
                 {
-                    if (record[0] == 0 || record[2] == 0)
+                    if (record[0] == 0 && record[2] == 0)
                     {
                         break;
                     }

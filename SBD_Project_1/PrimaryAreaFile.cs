@@ -137,6 +137,10 @@ namespace SBD_Project_1
 
         public void AddRecord(Record record, ref IndexFile indexFile)
         {
+            if (record.GetContent()[2] == -1)
+            {
+                return;
+            }
             //if the current page of the new file already contains α · bf records
             if (RecordsOnCurrentPage >= (Configuration.FileOrganization.PageUtilization * Configuration.FileOrganization.PrimaryAreaRecordsCount))
             {
