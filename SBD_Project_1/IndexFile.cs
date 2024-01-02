@@ -66,9 +66,12 @@ namespace SBD_Project_1
         {
             throw new NotImplementedException();
         }
-        public void UpdateRecord(int key, int pageNo)
+        public void UpdateRecord(int key, int newKey)
         {
-            throw new NotImplementedException();
+            LoadPage(0);
+            var record = _records.Where(x => x.Key == key).FirstOrDefault();
+            record.Key = newKey;
+            SavePage(0);
         }
         private void LoadPage(int pageNo)
         {

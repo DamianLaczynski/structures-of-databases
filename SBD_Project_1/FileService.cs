@@ -26,6 +26,15 @@ namespace SBD_Project_1
         public Result InsertRecord(int key, Record record)
         {
             var result = new Result();
+            var firstKey = GetFirstKey();
+            if (firstKey != -1 && key < firstKey)
+            {
+                var firstRecord = _primaryAreaFile.GetRecord(0, firstKey);
+                _primaryAreaFile.UpdateRecord(0, firstKey, key, record);
+                result = InsertRecord(firstKey, firstRecord.GetData());
+                _indexFile.UpdateRecord(firstKey, key);
+                return result;
+            }
             try
             {
                 var pageNo = _indexFile.GetPageNo(key);
@@ -34,13 +43,13 @@ namespace SBD_Project_1
                 {
                     _overflowAreaFile.AddRecord(new NaturalNumbersSetWithIndexRecord(key, record));
                 }
-                else if(pointer > 0)
+                else if (pointer > 0)
                 {
                     _overflowAreaFile.AddRecord(pointer, new NaturalNumbersSetWithIndexRecord(key, record));
                 }
 
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 result.Type = ResultType.Failure;
@@ -66,9 +75,9 @@ namespace SBD_Project_1
                     _primaryAreaFile.UpdateRecord(pageNo, key, record);
 
                     //TODO: update overflow area
-                    
+
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
                 }
@@ -85,7 +94,7 @@ namespace SBD_Project_1
                     DeleteRecord(key);
                     InsertRecord(newKey, record);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
                 }
@@ -106,14 +115,14 @@ namespace SBD_Project_1
             {
                 _primaryAreaFile.RemoveRecord(pageNo, key);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message + "Key not found in prime area");
                 try
                 {
                     _overflowAreaFile.RemoveRecord(key);
                 }
-                catch(Exception e2)
+                catch (Exception e2)
                 {
                     Console.WriteLine(e2.Message + "Key not found in overflow area");
                 }
@@ -185,7 +194,7 @@ namespace SBD_Project_1
                 var record = _primaryAreaFile.GetNextRecord();
 
                 //ignore deleted records
-                if(record.Key == 0)
+                if (record.Key == 0)
                 {
                     continue;
                 }
@@ -202,7 +211,7 @@ namespace SBD_Project_1
                     record.OverflowPointer = -1;
 
                     primaryAreaFile.AddRecord(record, ref indexFile);
-                    
+
                 }
             }
             _indexFile = indexFile;
@@ -227,6 +236,10 @@ namespace SBD_Project_1
             primaryAreaFile = new PrimaryAreaFile((int)primaryPages);
             overflowAreaFile = new OverflowAreaFile((int)overflowPages);
         }
+        private int GetFirstKey()
+        {
+            return _primaryAreaFile.GetFirstKey();
+        }
         private void Debug()
         {
             //print all information about files
@@ -234,7 +247,7 @@ namespace SBD_Project_1
             Console.WriteLine($"Page count: {_indexFile._pageCount}");
             //Console.WriteLine($"Records count: {_indexFile.RecordsCount}");
             //Console.WriteLine($"Reads: {_indexFile.Reads}");
-           // Console.WriteLine($"Writes: {_indexFile.Writes}");
+            // Console.WriteLine($"Writes: {_indexFile.Writes}");
             Console.WriteLine();
             Console.WriteLine("Primary area file:");
             Console.WriteLine($"Page count: {_primaryAreaFile._pageCount}");

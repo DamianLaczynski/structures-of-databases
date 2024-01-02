@@ -30,6 +30,9 @@ namespace SBD_Project_1.Models
         {
             throw new NotImplementedException();
         }
-
+        public virtual Record GetData()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

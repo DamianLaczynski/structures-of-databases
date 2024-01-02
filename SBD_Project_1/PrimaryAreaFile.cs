@@ -190,6 +190,26 @@ namespace SBD_Project_1
 
             SavePage(pageNo);
         }
+        public void UpdateRecord(int pageNo, int key,int newKey, Record newRecord)
+        {
+            LoadPage(pageNo);
+
+
+            var record = _records.Where(x => x.Key == key).FirstOrDefault();
+            if (record is null)
+            {
+                throw new Exception("Record not found");
+            }
+            else
+            {
+                var temp = record.OverflowPointer;
+                record.Update(newRecord);
+                record.OverflowPointer = temp;
+                record.Key = newKey;
+            }
+
+            SavePage(pageNo);
+        }
         public Record GetRecord(int pageNo, int key)
         {
             LoadPage(pageNo);
@@ -248,6 +268,16 @@ namespace SBD_Project_1
                 }
                 currentPageNo++;
             }
+        }
+
+        internal int GetFirstKey()
+        {
+            LoadPage(0);
+            if(_records.Count == 0)
+            {
+                return -1;
+            }
+            return _records.First().Key;
         }
     }
 }

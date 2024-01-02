@@ -80,5 +80,9 @@ namespace SBD_Project_1.Models
             }
             return result;
         }
+        public override Record GetData()
+        {
+            return _data;
+        }
     }
 }
