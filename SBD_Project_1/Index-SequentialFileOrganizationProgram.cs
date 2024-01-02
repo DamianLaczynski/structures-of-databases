@@ -44,15 +44,7 @@ namespace SBD_Project_1
                             InsertRecord();
                             break;
                         case 2:
-                            Console.Write("Enter key to update: ");
-                            if (int.TryParse(Console.ReadLine(), out int updateKey))
-                            {
-                                UpdateRecord(updateKey);
-                            }
-                            else
-                            {
-                                Console.WriteLine("Invalid index.");
-                            }
+                            UpdateRecord();
                             break;
                         case 3:
                             Console.Write("Enter key to delete: ");
@@ -112,6 +104,7 @@ namespace SBD_Project_1
                 if(result.Type == ResultType.Success)
                 {
                     Console.WriteLine("Record inserted successfully.");
+                    Console.WriteLine(result);
                 }
                 else if (result.Type == ResultType.AlreadyExists)
                 {
@@ -127,24 +120,37 @@ namespace SBD_Project_1
                 Console.WriteLine("Invalid key.");
             }
         }
-        private void UpdateRecord(int key)
+        private void UpdateRecord()
         {
-            Result result = _fileService.UpdateRecord(key);
-            if (result.Type == ResultType.Success)
+            Console.Write("Enter key of updated record: ");
+            if (int.TryParse(Console.ReadLine(), out int key))
             {
-                Console.WriteLine($"Record updated. Reads: {result.Reads}, Writes: {result.Writes}");
-            }
-            else
-            {
-                Console.WriteLine("Record not found.");
+                Console.Write("Enter new key of record: ");
+                if (int.TryParse(Console.ReadLine(), out int newKey))
+                {
+                    RecordGenerator recordGeneration = new ManualInputRecordGenerator();
+                    Record newRecord = recordGeneration.GetRecord();
+
+                    Result result = _fileService.UpdateRecord(key, newKey, newRecord);
+
+                    if (result.Type == ResultType.Success)
+                    {
+                        Console.WriteLine(result);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Record not found.");
+                    }
+                }
             }
         }
+
         private void DeleteRecord(int key)
         {
             Result result = _fileService.DeleteRecord(key);
             if (result.Type == ResultType.Success)
             {
-                Console.WriteLine($"Record deleted. Reads: {result.Reads}, Writes: {result.Writes}");
+                Console.WriteLine(result);
             }
             else
             {
@@ -156,7 +162,8 @@ namespace SBD_Project_1
             Result result = _fileService.GetRecord(key);
             if(result.Type == ResultType.Success)
             {
-                Console.WriteLine($"Record found. Reads: {result.Reads}, Writes: {result.Writes}");
+                Console.WriteLine(result);
+                Console.WriteLine(result.Record);
             }
             else
             {
@@ -168,7 +175,7 @@ namespace SBD_Project_1
             Result result = _fileService.DisplayFile();
             if (result.Type == ResultType.Success)
             {
-                Console.WriteLine($"File displayed. Reads: {result.Reads}, Writes: {result.Writes}");
+                Console.WriteLine(result);
             }
             else
             {
@@ -180,7 +187,7 @@ namespace SBD_Project_1
             Result result = _fileService.Reorganize();
             if (result.Type == ResultType.Success)
             {
-                Console.WriteLine($"File reorganized. Reads: {result.Reads}, Writes: {result.Writes}");
+                Console.WriteLine(result);
             }
             else
             {
