@@ -24,11 +24,14 @@ namespace SBD_Project_1
         public int RecordsCount { get; set; }
         public int _pageCount { get; set; }
 
+        public int EnableSpace { get; set; }
+
         public OverflowAreaFile()
         {
             _file = new BinaryFile(@$"fileOrganization\overflow{OverflowAreaFileNo}.bin");
             _records = new LinkedList<Record>();
             _pageCount = _file.GetPageCount();
+            EnableSpace = 1 * MaxRecordsOnPage;
             OverflowAreaFileNo++;
         }
 
@@ -37,6 +40,7 @@ namespace SBD_Project_1
             _file = new BinaryFile(@$"fileOrganization\overflow{OverflowAreaFileNo}.bin", FileMode.Create);
             _records = new LinkedList<Record>();
             //_pageCount = pagesCount; ??? check this
+            EnableSpace = pagesCount*MaxRecordsOnPage;
             OverflowAreaFileNo++;
         }
         private void LoadPage(int pageNo)
@@ -69,6 +73,7 @@ namespace SBD_Project_1
 
             _records.AddLast(record);
             RecordsCount++;
+            EnableSpace--;
             SavePage(_pageCount);
         }
 
@@ -78,17 +83,17 @@ namespace SBD_Project_1
         }
         public void AddRecord(int pointer, Record record)
         {
-            if(pointer > record.Key)
+            if (pointer > record.Key)
             {
                 record.OverflowPointer = pointer;
                 AddRecord(record);
                 return;
             }
-            else if(pointer < record.Key)
+            else if (pointer < record.Key)
             {
                 //search for greatest record that is smaller than record to add
                 var current = GetRecord(pointer);
-                if(current.OverflowPointer > record.Key) 
+                if (current.OverflowPointer > record.Key || current.OverflowPointer == -1) 
                 {
                     record.OverflowPointer = current.OverflowPointer;
                     current.OverflowPointer = record.Key;
@@ -117,110 +122,7 @@ namespace SBD_Project_1
                     SavePage(_currentPageNo);
                     AddRecord(record);
                 }
-                
-                
-            }
-
-
-
-            /*var currentPage = 0;
-            int greaterOnPage;
-            while (true)
-            {
-                LoadPage(currentPage);
-                
-                var greaterRecord = _records.OrderBy(x => x.Key).Where(x => x.Key > record.Key).FirstOrDefault();
-                
-                if (greaterRecord is null)
-                {
-                    
-                    greaterRecord = _records.OrderBy(x => x.Key).LastOrDefault();
-                    if (greaterRecord is null)
-                    {
-                        AddRecord(record);
-                        return;
-                    }
-                    else
-                    {
-                        greaterOnPage = greaterRecord.Key;
-                        if(currentPage == _pageCount)
-                        {
-                            record.OverflowPointer = greaterRecord.Key;
-                            AddRecord(record);
-                            return;
-                        }
-                    }
-                }
-                else
-                {
-                    record.OverflowPointer = greaterRecord.OverflowPointer;
-                    greaterRecord.OverflowPointer = record.Key;
-                    SavePage(currentPage);
-                }
-                currentPage++;
-
-            }*/
-
-
-
-
-
-            /*
-                        bool isPointerGreater = false;
-                        if (pointer > record.Key)
-                        {
-                            isPointerGreater = true;
-                            record.OverflowPointer = pointer;
-                        }
-
-                        this.AddRecord(record);
-
-                        var pageNo = -1;
-                        bool isDirtyPage = false;
-                        Record recordToUpdate = null;
-                        bool isRecordFound = false;
-                        while (!isRecordFound)
-                        {
-                            pageNo++;
-                            LoadPage(pageNo);
-                            recordToUpdate = _records.FirstOrDefault(x => x.Key == pointer);
-                            if (recordToUpdate is null)
-                            {
-                                continue;
-                            }
-                            while (recordToUpdate.OverflowPointer != -1)
-                            {
-                                recordToUpdate = _records.FirstOrDefault(x => x.Key == recordToUpdate.OverflowPointer);
-
-                                if (recordToUpdate is null)
-                                {
-                                    break;
-                                }
-                                pointer = recordToUpdate.OverflowPointer;
-                                if (pointer > record.Key)
-                                {
-                                    isPointerGreater = true;
-                                    record.OverflowPointer = pointer;
-                                }
-                            }
-                        }
-
-
-                        if (isPointerGreater)
-                        {
-                            recordToUpdate.OverflowPointer = -1;
-                        }
-                        else
-                        {
-                            recordToUpdate.OverflowPointer = record.Key;
-                            isDirtyPage = true;
-
-                        }
-                        if (isDirtyPage)
-                        {
-                            SavePage(pageNo);
-                            isDirtyPage = false;
-                        }*/
+            }              
         }
         public Record GetRecord(int key)
         {

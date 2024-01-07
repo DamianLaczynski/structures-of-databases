@@ -60,6 +60,15 @@ namespace SBD_Project_1
             }
             CountDiscAccesses(ref result);
 
+            if(_overflowAreaFile.EnableSpace <= 1)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Reorganizing...");
+                Console.ResetColor();
+                Reorganize();
+                DisplayFile();
+            }
+
             //Debug();
 
             return result;
@@ -149,7 +158,7 @@ namespace SBD_Project_1
                 Console.WriteLine(e.Message + "Key not found in prime area");
                 try
                 {
-                    _overflowAreaFile.GetRecord(key);
+                    result.Record = _overflowAreaFile.GetRecord(key);
                 }
                 catch (Exception e2)
                 {
