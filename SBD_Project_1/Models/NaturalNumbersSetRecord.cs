@@ -21,6 +21,15 @@ namespace SBD_Project_1.Models
             {
                 throw new ArgumentException($"Record can't be empty");
             }
+            else if(numbers.Length < Configuration.MAX_RECORD_LENGTH)
+            {
+                _numbers = new int[Configuration.MAX_RECORD_LENGTH];
+                for (int i = 0; i < numbers.Length; i++)
+                {
+                    _numbers[i] = numbers[i];
+                }
+                Index = PrimeNumbersCounter.Count(_numbers);
+            }
             else
             {
                 _numbers = numbers;
